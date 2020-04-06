@@ -1,0 +1,17 @@
+<world>
+    <room id="001">
+        <player>
+			<name>Marvin</name>
+		</player>
+		<connectsto>003,004</connectsto>
+    </room>
+    <room id="002">
+        <connectsto>004</connectsto>
+    </room>
+    <room id="003">
+       <connectsto>001</connectsto>
+    </room>
+	<room id="004">
+        <connectsto>001,002</connectsto>
+	</room>
+</world>
