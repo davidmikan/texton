@@ -1,17 +1,31 @@
 <world>
-    <room id="0">
+    <room id="0" visited=True>
         <player>
 			<name>Marvin</name>
+            <inventory>
+            <object type='standard'>
+                <name>Letter</name>
+            </object>
+            </inventory>
 		</player>
+
 		<connectsto>2,3</connectsto>
+        <name>Starter Room</name>
+        <description>The walls are green.</description>
     </room>
     <room id="1">
         <connectsto>3</connectsto>
+        <name>Raum 2</name>
+        <description>The walls are green, but have a blue tint!</description>
     </room>
     <room id="2">
        <connectsto>0</connectsto>
+       <name>Raum 3</name>
+       <description>This rooms walls are pink.</description>
     </room>
 	<room id="3">
         <connectsto>0,1</connectsto>
+        <name>Raum 4</name>
+        <description></description>
 	</room>
 </world>
