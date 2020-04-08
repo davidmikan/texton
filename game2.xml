@@ -6,6 +6,9 @@
         <object type="standard">
           <name>Letter</name>
         </object>
+		<object type="custom">
+			<name>Bottle</name>
+		</object>
       </inventory>
     </player>
     <connectsto>2,3</connectsto>
