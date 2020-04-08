@@ -1,0 +1,7 @@
+7.4.:
+tobias: 1.5h, 3h
+david: 2h, 1.5h
+
+8.4.:
+tobias: 2h
+david: 2h

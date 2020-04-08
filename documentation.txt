@@ -1,0 +1,11 @@
+main.py:
+
+load() loads a "world" object, a "activeroom" object and a "player" object
+
+world object: contains a dict of rooms "rooms", each key is the rooms id and value is an element 
+containing the room: it has it's attributes in a dict "self.attr", properties and objects as 
+objects in "self.objects"
+
+activeroom object: is a link to the room object in world.rooms with the id player.inroom
+
+player object: contains an inventory, which is a list of objects

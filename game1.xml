@@ -1,30 +1,35 @@
-<world>
-    <room id="0" visited=True>
+<world playsession='0'>
+    <room id='0' visited='False'>
         <player>
-			<name>Marvin</name>
+            <name></name>
             <inventory>
-            <object type='standard'>
+            <object type='test'>
                 <name>Letter</name>
             </object>
             </inventory>
-		</player>
-
-		<connectsto>2,3</connectsto>
+        </player>
+        <object type='standard'>
+                <name>irgendwas</name>
+        </object>
+		<connectsto>2,3,</connectsto>
         <name>Starter Room</name>
         <description>The walls are green.</description>
     </room>
-    <room id="1">
-        <connectsto>3</connectsto>
+    <room id='1' visited='False'>
+        <connectsto>3,</connectsto>
         <name>Raum 2</name>
         <description>The walls are green, but have a blue tint!</description>
     </room>
-    <room id="2">
-       <connectsto>0</connectsto>
+    <room id='2' visited='False'>
+        <object type='standard'>
+                <name>0815</name>
+        </object>
+       <connectsto>0,</connectsto>
        <name>Raum 3</name>
        <description>This rooms walls are pink.</description>
     </room>
-	<room id="3">
-        <connectsto>0,1</connectsto>
+	<room id='3' visited='False'>
+        <connectsto>0,1,</connectsto>
         <name>Raum 4</name>
         <description></description>
 	</room>

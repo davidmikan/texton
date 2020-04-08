@@ -1,0 +1,29 @@
+inventory
+object classes, description, uses
+taking objects + main.py structure
+
+STRUCTURE
+ist das gut eingeteilt so? dann sehen wir so was was halten kann  aso ja pass
+
+world:
+    properties
+	events
+	room
+
+room ( id ):
+    properties
+    events
+    objects
+    player
+
+player:
+    properties
+    events
+    inventory
+
+inventory:
+    object
+
+object ( id ):
+    properties
+    events

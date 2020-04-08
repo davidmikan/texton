@@ -1,27 +1,34 @@
 from lxml import etree
 import objects
 
-def readtopy(path):
+def loadworld(gamefile):
         #open XML file and preparing tree element
-        with open(path, 'r') as file:
+        with open(gamefile, 'r') as file:
                 xmlstring = file.read()
         tree = etree.XML(xmlstring)
         #transferring informations to objects via object's method
         world = objects.World(tree)
-        print("Sucessfully read XML file...")
-        return world
+        #load player 
+        for room in world.rooms.values():
+            if hasattr(room, 'player'):
+                global player
+                player = room.player
+                del room.player
+        print("Loaded World!")
+        return world, player
 
-def writetoxml(world, path):        
-        tree = world.save()
+def saveworld(rootobj, playerobj, gamefile):
+        #merger root and player
+        rootobj.rooms[playerobj.inroom].player = playerobj
+        tree = rootobj.save()
         xmlstring = etree.tostring(tree, pretty_print=True)
-        with open(path, 'wb+') as file:
+        with open(gamefile, 'wb+') as file:
                 file.write(xmlstring)
-        print("Sucessfully wrote XML file...")
+        print("Saved World!")
         return
         
-##testing       
-##path = "test.xml"
-##path2 = "test2.xml"
-##
-##x = readtopy(path)
-##writetoxml(x, path2)
+       
+path = "game2.xml"
+path2 = "test2.xml"
+
+loadworld(path)
