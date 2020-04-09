@@ -28,7 +28,8 @@ def saveworld(rootobj, playerobj, gamefile):
         return
         
        
-path = "game2.xml"
+path = "game1.xml"
 path2 = "test2.xml"
 
-loadworld(path)
+world, player = loadworld(path)
+saveworld(world, player, path2)

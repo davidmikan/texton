@@ -1,36 +1,60 @@
 <world playsession='0'>
-    <room id='0' visited='False'>
+	<properties></properties>
+	<events></events>
+    <room id='0'>
+		<properties>
+			<connectsto>2,3</connectsto>
+			<name>Starter Room</name>
+			<description>The walls are green.</description>
+			<visited>False</visited>
+		</properties>
+		<events></events>
+		<object id='0' type='standard'>
+			<properties>
+				<name>irgendwas</name>
+			</properties>
+			<events></events>
+        </object>
         <player>
-            <name></name>
+			<properties>
+				<name></name>
+			</properties>
             <inventory>
-            <object type='test'>
-                <name>Letter</name>
+            <object id='1' type='test'>
+				<properties>
+					<name>Letter</name>
+				</properties>
+                <events></events>
             </object>
             </inventory>
         </player>
-        <object type='standard'>
-                <name>irgendwas</name>
-        </object>
-		<connectsto>2,3,</connectsto>
-        <name>Starter Room</name>
-        <description>The walls are green.</description>
     </room>
-    <room id='1' visited='False'>
-        <connectsto>3,</connectsto>
-        <name>Raum 2</name>
-        <description>The walls are green, but have a blue tint!</description>
+    <room id='1'>
+		<properties>
+			<connectsto>3</connectsto>
+			<name>Raum 2</name>
+			<description>The walls are green, but have a blue tint!</description>
+		</properties>
     </room>
     <room id='2' visited='False'>
-        <object type='standard'>
-                <name>0815</name>
+		<properties>
+			<connectsto>0</connectsto>
+			<name>Raum 3</name>
+			<description>This rooms walls are pink.</description>
+			<visited>False</visited>
+		</properties>
+        <object id='0' type='standard'>
+			<properties>
+				<name>0815</name>
+			</properties>
         </object>
-       <connectsto>0,</connectsto>
-       <name>Raum 3</name>
-       <description>This rooms walls are pink.</description>
     </room>
-	<room id='3' visited='False'>
-        <connectsto>0,1,</connectsto>
-        <name>Raum 4</name>
-        <description></description>
+	<room id='3'>
+		<properties>
+			<connectsto>0,1</connectsto>
+			<name>Raum 4</name>
+			<description></description>
+			<visited>False</visited>
+		</properties>
 	</room>
 </world>

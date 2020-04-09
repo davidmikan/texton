@@ -14,14 +14,15 @@ def load():
     print('PLAYER: ' + str(player))
 
 def changeroom(destination):
-    if world.rooms[destination] is not None:
-        world.rooms[player.inroom] = activeroom
-        player.inroom = destination
-        activeroom = world.rooms[destination]
-        print('You\'re in ' + activeroom.name)
-        if activeroom.attr['visited'] == False: 
-            print(activeroom.description)
-            activeroom.attr['visited'] = True
+	global activeroom
+	if world.rooms[destination] is not None:
+		world.rooms[player.inroom] = activeroom
+		player.inroom = destination
+		activeroom = world.rooms[destination]
+		print('You\'re in ' + activeroom.properties['name'])
+		if activeroom.properties['visited'] == False: 
+			print(activeroom.description)
+			activeroom.properties['visited'] = True
 
 def save():
     print('Saving...')

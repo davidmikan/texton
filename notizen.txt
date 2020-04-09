@@ -1,11 +1,6 @@
-inventory
-object classes, description, uses
-taking objects + main.py structure
-
 STRUCTURE
-ist das gut eingeteilt so? dann sehen wir so was was halten kann  aso ja pass
 
-world:
+world ( playsession ) :
     properties
 	events
 	room
@@ -24,6 +19,6 @@ player:
 inventory:
     object
 
-object ( id ):
+object ( id , type ):
     properties
     events

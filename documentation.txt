@@ -9,3 +9,8 @@ objects in "self.objects"
 activeroom object: is a link to the room object in world.rooms with the id player.inroom
 
 player object: contains an inventory, which is a list of objects
+
+get_prop(etree.Element) : searches for properties tag and returns a dictionary of properties with tag name as key and tag text as value
+
+prop_xml(dictionary): takes dictionary with tag name as keys and tag text as values, returns etree.Element (<properties/> )
+
