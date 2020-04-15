@@ -1,6 +1,5 @@
 from lxml import etree
 import objects
-
 def loadworld(gamefile):
         #open XML file and preparing tree element
         with open(gamefile, 'r') as file:
@@ -14,6 +13,12 @@ def loadworld(gamefile):
                 global player
                 player = room.player
                 del room.player
+        #add connections id to room.connections
+        # for con in world.connections:
+        #     connects = con.properties['connects'].split(',')
+        #     for x in connects:
+        #         world.rooms[x].connections[con.id] = con.properties['connects']
+        #     finish
         print("Loaded World!")
         return world, player
 
@@ -26,10 +31,3 @@ def saveworld(rootobj, playerobj, gamefile):
                 file.write(xmlstring)
         print("Saved World!")
         return
-        
-       
-path = "game1.xml"
-path2 = "test2.xml"
-
-world, player = loadworld(path)
-saveworld(world, player, path2)

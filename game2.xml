@@ -1,6 +1,12 @@
 <world>
 <properties></properties>
 <events></events>
+<connection>
+  <properties>
+    <connects></connects>
+  </properties>
+  <events></events>
+</connection>
 <room id=''>
   <properties></properties>
   <events></events>

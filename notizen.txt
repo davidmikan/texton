@@ -22,3 +22,7 @@ inventory:
 object ( id , type ):
     properties
     events
+
+connection ( id ):
+    properties
+    events

@@ -4,6 +4,7 @@
   </properties>
   <room id="0">
     <properties>
+      <connectsto>2,3</connectsto>
       <name>Starter Room</name>
       <description>The walls are green.</description>
       <visited>False</visited>
@@ -13,16 +14,9 @@
         <name>irgendwas</name>
       </properties>
     </object>
-  </room>
-  <room id="1">
-    <properties>
-      <visited>True</visited>
-      <name>Raum 2</name>
-      <description>The walls are green, but have a blue tint!</description>
-    </properties>
     <player>
       <properties>
-        <name>None</name>
+        <name/>
       </properties>
       <inventory>
         <object id="002" type="test">
@@ -33,8 +27,17 @@
       </inventory>
     </player>
   </room>
+  <room id="1">
+    <properties>
+      <visited>False</visited>
+      <connectsto>3</connectsto>
+      <name>Raum 2</name>
+      <description>The walls are green, but have a blue tint!</description>
+    </properties>
+  </room>
   <room id="2">
     <properties>
+      <connectsto>0</connectsto>
       <name>Raum 3</name>
       <description>This rooms walls are pink.</description>
       <visited>False</visited>
@@ -47,23 +50,10 @@
   </room>
   <room id="3">
     <properties>
+      <connectsto>0,1</connectsto>
       <name>Raum 4</name>
-      <description>None</description>
+      <description/>
       <visited>False</visited>
     </properties>
   </room>
-  <connection id="c-0">
-    <properties>
-      <locked>False</locked>
-    </properties>
-    <link>0</link>
-    <link>1</link>
-  </connection>
-  <connection id="c-1">
-    <properties>
-      <locked>True</locked>
-    </properties>
-    <link>0</link>
-    <link>2</link>
-  </connection>
 </world>

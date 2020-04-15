@@ -1,0 +1,5 @@
+{
+    "take": "{name} is in your inventory now.",
+    "drop": "You dropped {name}.",
+    "roomchange": "You're in {name} now."
+}

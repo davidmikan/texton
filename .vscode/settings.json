@@ -1,0 +1,55 @@
+{
+    "highlight.regexes": {
+      "(id=['\"]\\d\\d*['\"])": {
+        "decorations": [ // IDs
+          { 
+          "color": "#ffed4f" }
+      ],
+        "filterLanguageRegex": "xml"
+    },
+    "(type=[\"'].*?[\"'])": {
+      "decorations": [ // TYPEs
+        { 
+        "color": "#ffed4f" }
+    ],
+      "filterLanguageRegex": "xml"
+  },
+  "(</*room.*?>)": [ // ROOMs
+    { 
+      "color": "#f5f5f5",
+      "backgroundColor": "#001e5e" }
+  ],    
+      "(</*player>)": [ // PLAYER
+        { 
+          "color": "#f5f5f5",
+          "backgroundColor": "#9e1515" }
+      ],
+      "(</*object.*?>)": [ // OBJECTs
+        { 
+          "color": "#f5f5f5",
+          "backgroundColor": "#c9541e" }
+      ],
+      "(</*world>)": [ // WORLD
+          {
+            "color": "#f5f5f5",
+            "backgroundColor": "#001238" }
+        ],
+      "(</*properties>)": [ // PROPERTIES
+          { 
+            
+            "color": "#f5f5f5",
+            "backgroundColor": "#7c35b0" }
+        ],
+        "(<.+?>)": 
+      {"decorations": [ // EVERY TAG
+        { "color": "#57ffa8" }
+      ],
+        "filterLanguageRegex": "xml"
+      },
+    "([\\s\\S]*)": {"decorations": [ // EVERYTHING
+      { 
+      "color": "white" }
+    ],
+      "filterLanguageRegex": "xml"
+    }
+}}
