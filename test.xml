@@ -13,13 +13,6 @@
         <name>irgendwas</name>
       </properties>
     </object>
-  </room>
-  <room id="1">
-    <properties>
-      <visited>True</visited>
-      <name>Raum 2</name>
-      <description>The walls are green, but have a blue tint!</description>
-    </properties>
     <player>
       <properties>
         <name>None</name>
@@ -32,6 +25,13 @@
         </object>
       </inventory>
     </player>
+  </room>
+  <room id="1">
+    <properties>
+      <visited>False</visited>
+      <name>Raum 2</name>
+      <description>The walls are green, but have a blue tint!</description>
+    </properties>
   </room>
   <room id="2">
     <properties>
