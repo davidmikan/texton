@@ -146,6 +146,24 @@ class Object:
         #events
         return obj
 
+class ObjPath:
+    def __init__(self, world, player):
+        for room in world.rooms:
+            name = "room." + str(room)
+            self.__dict__[name] = []
+            for obj in world.rooms[room]:
+                self.__dict__[name].append(str(obj))
+        self.__dict__['player']
+        for obj in player.inventory:
+            self.__dict__['player'].append(str(obj))
+        return
+    
+    def __repr__(self):
+        for x in self.__dict__:
+            print(x)
+            for y in self.dict[x]:
+                print('\t', y)
+
 def get_prop(element):
     prop = {}
     for child in element.find('properties').getchildren():

@@ -8,6 +8,7 @@ def load(gamefile):
     global world
     global player
     global activeroom
+    global messages
     with open('statusmsg.json') as f:
         testdict = json.load(f)
         print(testdict['take'])
@@ -15,6 +16,9 @@ def load(gamefile):
     activeroom = world.rooms[player.inroom]
     print('ROOMS: ' + str(world.rooms))
     print('PLAYER: ' + str(player))
+    with open('statusmsg.json') as f:
+        messages = json.load(f)
+    print(messages)
 
 def findroomid(name):
     for roomid, room in world.rooms.items():
@@ -42,7 +46,7 @@ def changeroom(arg=''):
         return
     for con in activeroom.connectsto:
         if destination in world.connections[con].links:
-            if not world.connections[con].properties['locked']:
+            if not world.connections[con].properties['locked'] or unlockroom(con):
 
                 # go into room
                 world.rooms[player.inroom] = activeroom # save active room
@@ -58,6 +62,12 @@ def changeroom(arg=''):
                 print('The way is locked.')
                 return
     print('You can\'t go to that room.')
+
+def unlockroom(id):
+    if world.connections[id].properties['key'] in player.inventory:
+        world.connections[id].properties['locked'] = True
+        return True
+    return False
 
 def lookat(arg=''):
     if arg.startswith('around'):
@@ -99,6 +109,10 @@ def checkinv(arg=''):
         for thing in invobjects: msg+= thing
         print(msg)
 
+def say(key, room=None):
+    if room is not None:
+        print(messages[key].replace('{name}', world.rooms[room].properties['name']))
+
 def save(arg=''):
     print('Saving...')
     converter.saveworld(world, player, 'test.xml')
@@ -128,4 +142,4 @@ commandlist = {
 }
 
 load('game1.xml')
-action()
+say('roomchange', '1')
