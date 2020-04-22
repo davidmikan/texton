@@ -22,6 +22,8 @@ class World:
         return
 
     def display(self):
+        indent = 0
+        tree = ''
         tree = '\nworld:\n'
         for room in self.rooms:
             tree += '  room ' + self.rooms[room].id + ':\n'
@@ -99,15 +101,15 @@ class Connection:
         return con
 
 class Player:
-    def __init__(self, playerel, inroom):
+    def __init__(self, plitem, inroom):
         self.inroom = inroom
         #properties
-        self.properties = get_prop(playerel)
+        self.properties = get_prop(plitem)
         #events
         self.events = {}
         #inventory
         self.inventory = {}
-        for obj in playerel.find('inventory').getchildren():
+        for obj in plitem.find('inventory').getchildren():
             self.inventory[obj.get('id')] = Object(obj)
         return
         
@@ -127,12 +129,12 @@ class Player:
         return player
     
 class Object:
-    def __init__(self, item):
+    def __init__(self, objitem):
         #attributes
-        self.id = item.get('id')
-        self.type = item.get('type')
+        self.id = objitem.get('id')
+        self.type = objitem.get('type')
         #properties
-        self.properties = get_prop(item)
+        self.properties = get_prop(objitem)
         #events
         self.events = {}
         return
@@ -146,23 +148,30 @@ class Object:
         #events
         return obj
 
+class Event:
+    def __init__(self, evitem):
+        # hier gehts los
+
 class ObjPath:
+    #work in progress
     def __init__(self, world, player):
         for room in world.rooms:
             name = "room." + str(room)
             self.__dict__[name] = []
-            for obj in world.rooms[room]:
+            for obj in world.rooms[room].objects:
                 self.__dict__[name].append(str(obj))
-        self.__dict__['player']
+        self.__dict__['player'] = []
         for obj in player.inventory:
             self.__dict__['player'].append(str(obj))
         return
     
-    def __repr__(self):
+    def __str__(self):
+        pathstr = 'world \n'
         for x in self.__dict__:
-            print(x)
-            for y in self.dict[x]:
-                print('\t', y)
+            pathstr += '+---' + x + '\n'
+            for y in self.__dict__[x]:
+                pathstr += '+\t|---' + 'object.' + y + '\n'
+        print(pathstr)
 
 def get_prop(element):
     prop = {}
@@ -172,11 +181,11 @@ def get_prop(element):
             else:
                 prop[child.tag] = child.text
     return prop
-    
+   
 def prop_xml(prop):
-    property = etree.Element('properties')
+    propertyel = etree.Element('properties')
     for key in prop:
         x = etree.Element(key)
         x.text = str(prop[key])
-        property.append(x)
-    return property
+        propertyel.append(x)
+    return propertyel

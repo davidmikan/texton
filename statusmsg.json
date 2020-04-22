@@ -1,5 +1,17 @@
 {
-    "take": "{name} is in your inventory now.",
-    "drop": "You dropped {name}.",
-    "roomchange": "You're in {name} now."
+    "world_saving": "Saving...",
+    "world_saved": "Saved World!",
+    "world_savefailed": "Saving failed!",
+    "world_quit": "Goodbye!",
+    "room_accessfailed": "You can't go there from here.",
+    "room_notfound": "There's no such room here.",
+    "room_alreadyactive": "You're already here.",
+    "room_locked": "The way is locked.",
+    "room_entered": "You're in {name} now.",
+    "object_taken": "{name} is in your inventory now.",
+    "object_dropped": "You dropped {name}.",
+    "object_notfound": "There's nothing like that here.",
+    "object_notininv": "There's no such thing in your inventory.",
+    "inventory_empty": "You have nothing in your inventory.",
+    "inventory_list": "You have:"
 }

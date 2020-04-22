@@ -23,11 +23,13 @@ def loadworld(gamefile):
         return world, player
 
 def saveworld(rootobj, playerobj, gamefile):
-        #merger root and player
-        rootobj.rooms[playerobj.inroom].player = playerobj
-        tree = rootobj.save()
-        xmlstring = etree.tostring(tree, pretty_print=True)
-        with open(gamefile, 'wb+') as file:
-                file.write(xmlstring)
-        print("Saved World!")
-        return
+        try:
+                #merger root and player
+                rootobj.rooms[playerobj.inroom].player = playerobj
+                tree = rootobj.save()
+                xmlstring = etree.tostring(tree, pretty_print=True)
+                with open(gamefile, 'wb+') as file:
+                        file.write(xmlstring)
+                return True
+        except:
+                return False

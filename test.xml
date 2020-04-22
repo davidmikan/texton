@@ -62,6 +62,7 @@
   <connection id="c-1">
     <properties>
       <locked>True</locked>
+      <key>001</key>
     </properties>
     <link>0</link>
     <link>2</link>
