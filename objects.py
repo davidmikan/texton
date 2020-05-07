@@ -1,4 +1,10 @@
 from lxml import etree
+import events
+
+def __init__():
+    global world
+    global player
+    global activeroom
 
 class World:
     def __init__(self, tree):
@@ -6,6 +12,8 @@ class World:
         self.properties = get_prop(tree)
         #events
         self.events = {}
+        for event in tree.find('events').findall('event'):
+            self.events[event.get('id')] = events.Event(event)
         #connections
         self.connections = {}
         for con in tree.findall('connection'):
@@ -22,24 +30,18 @@ class World:
         return
 
     def display(self):
-        indent = 0
-        tree = ''
-        tree = '\nworld:\n'
-        for room in self.rooms:
-            tree += '  room ' + self.rooms[room].id + ':\n'
-            for prop in self.rooms[room].properties:
-                tree += '    ' + prop + ': ' + str(self.rooms[room].properties[prop]) + '\n'
-            for obj in self.rooms[room].objects:
-                tree += '    object ' + self.rooms[room].objects[obj].id + ':\n'
-                for prop in self.rooms[room].objects[obj].properties:
-                    tree += '      ' + prop + ': ' + str(self.rooms[room].objects[obj].properties[prop]) + '\n'
-        return tree
+        proptree = '\nWORLD: \n'
+        for propname, propvalue in self.properties.items():
+            proptree += str(propname) + ': ' + str(propvalue) + '\n'
+        print(proptree)
 
     def save(self):
         world = etree.Element('world')
         #properties
         world.append(prop_xml(self.properties))
         #events
+        for event in self.events.values():
+            world.append(event.save())
         #rooms
         for room in self.rooms.values():
             world.append(room.save())
@@ -150,7 +152,7 @@ class Object:
 
 class Event:
     def __init__(self, evitem):
-        # hier gehts los
+        pass
 
 class ObjPath:
     #work in progress
@@ -176,8 +178,12 @@ class ObjPath:
 def get_prop(element):
     prop = {}
     for child in element.find('properties').getchildren():
-            if child.text in ['True', 'False']:
+            if not child.text:
+                prop[child.tag] = ''
+            elif child.text in ['True', 'False']:
                 prop[child.tag] = bool(child.text=='True')
+            elif child.text.isdigit():
+                prop[child.tag] = int(child.text)
             else:
                 prop[child.tag] = child.text
     return prop
@@ -189,3 +195,13 @@ def prop_xml(prop):
         x.text = str(prop[key])
         propertyel.append(x)
     return propertyel
+
+def findroom(prop) -> list:
+    matches = []
+    for roomid, room in world.rooms.items():
+        if prop in room.properties.values(): 
+            matches.append(roomid)
+    return matches
+
+def findobjects() -> list:
+    return

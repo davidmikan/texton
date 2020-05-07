@@ -5,53 +5,49 @@ import objects
 import converter
 
 def load(gamefile):
-    global world
-    global player
-    global activeroom
     global messages
-    world, player = converter.loadworld(gamefile)
-    activeroom = world.rooms[player.inroom]
-    print('ROOMS: ' + str(world.rooms))
-    print('PLAYER: ' + str(player))
+    converter.loadworld(gamefile)
+    objects.activeroom = objects.world.rooms[objects.player.inroom]
+    print('ROOMS: ' + str(objects.world.rooms))
+    print('PLAYER: ' + str(objects.player))
     with open('statusmsg.json') as f:
         messages = json.load(f)
 
 def findroomid(name):
-    for roomid, room in world.rooms.items():
+    for roomid, room in objects.world.rooms.items():
         if name.lower() == room.properties['name'].lower(): 
             return roomid
 
 def findobjid(name, ininventory=False):
-    for objid, obj in activeroom.objects.items():
+    for objid, obj in objects.activeroom.objects.items():
         if name.lower() == obj.properties['name'].lower(): 
             return objid, ininventory
-    for objid, obj in player.inventory.items():
+    for objid, obj in objects.player.inventory.items():
         if name.lower() == obj.properties['name'].lower(): 
             ininventory = True
             return objid, ininventory
     return None
 
 def changeroom(arg=''):
-    global activeroom
     destination = findroomid(arg)
     if destination is None:
         say('room_notfound')
         return
-    if player.inroom == destination:
+    if objects.player.inroom == destination:
         say('room_alreadyactive')
         return
-    for con in activeroom.connectsto:
-        if destination in world.connections[con].links:
-            if not world.connections[con].properties['locked'] or unlockroom(con):
+    for con in objects.activeroom.connectsto:
+        if destination in objects.world.connections[con].links:
+            if not objects.world.connections[con].properties['locked'] or unlockroom(con):
 
                 # go into room
-                world.rooms[player.inroom] = activeroom # save active room
-                player.inroom = destination # set player position to destination room
-                activeroom = world.rooms[destination] # set active room to destination room
-                say('room_entered', activeroom)
-                if activeroom.properties['visited'] == False: 
-                    print(activeroom.properties['description'])
-                    activeroom.properties['visited'] = True
+                objects.world.rooms[objects.player.inroom] = objects.activeroom # save active room
+                objects.player.inroom = destination # set player position to destination room
+                objects.activeroom = objects.world.rooms[destination] # set active room to destination room
+                say('room_entered', objects.activeroom)
+                if objects.activeroom.properties['visited'] == False: 
+                    print(objects.activeroom.properties['description'])
+                    objects.activeroom.properties['visited'] = True
                 return
 
             else:
@@ -60,49 +56,49 @@ def changeroom(arg=''):
     say('room_accessfailed')
 
 def unlockroom(id):
-    if world.connections[id].properties['key'] in player.inventory:
-        world.connections[id].properties['locked'] = False
+    if objects.world.connections[id].properties['key'] in objects.player.inventory:
+        objects.world.connections[id].properties['locked'] = False
         return True
     return False
 
 def lookat(arg=''):
     if arg.startswith('around'):
-        print(activeroom.properties['description'])
+        print(objects.activeroom.properties['description'])
     elif arg.startswith('at '):
         obj, ininv = findobjid(arg[3:])
         if obj is not None:
-            if ininv: print(player.inventory[obj].properties['description'])
-            elif not ininv: print(activeroom.objects[obj].properties['description'])
+            if ininv: print(objects.player.inventory[obj].properties['description'])
+            elif not ininv: print(objects.activeroom.objects[obj].properties['description'])
     else:
         say('object_notfound')
 
 def take(arg=''):
     obj, x = findobjid(arg)
     if obj is not None:
-        player.inventory[obj] = activeroom.objects[obj]
-        del activeroom.objects[obj]
-        say('object_taken', player.inventory[obj])
+        objects.player.inventory[obj] = objects.activeroom.objects[obj]
+        del objects.activeroom.objects[obj]
+        say('object_taken', objects.player.inventory[obj])
     else:
         say('object_notfound')
 
 def drop(arg=''):
     obj, x = findobjid(arg)
     if obj is not None:
-        activeroom.objects[obj] = player.inventory[obj]
-        del player.inventory[obj]
-        say('object_dropped', activeroom.objects[obj])
+        objects.activeroom.objects[obj] = objects.player.inventory[obj]
+        del objects.player.inventory[obj]
+        say('object_dropped', objects.activeroom.objects[obj])
     else:
         say('object_notininv')
 
 def checkinv(arg=''):
     invobjects = []
-    for obj in player.inventory.values():
+    for obj in objects.player.inventory.values():
         invobjects.append(obj.properties['name'])
     if len(invobjects) == 0:
         say('inventory_empty')
     else:
         msg = messages['inventory_list'] + ' '
-        for thing in invobjects: msg+= thing
+        for thing in invobjects: msg+= '; '+thing
         print(msg)
 
 def say(key, obj=None):
@@ -114,7 +110,7 @@ def say(key, obj=None):
 
 def save(arg=''):
     say('world_saving')
-    if converter.saveworld(world, player, 'test.xml'): say('world_saved')
+    if converter.saveworld(objects.world, objects.player, 'test.xml'): say('world_saved')
     else: say('world_savefailed')
 
 def exitgame(arg=''):
@@ -127,8 +123,10 @@ def action():
         uinput = input('> ').lower()
         for command in commandlist:
             if uinput.startswith(command):
+                # call command, run check
                 uinput = uinput[len(command)+1:]
                 commandlist[command](arg=uinput)
+                objects.events.check()
                 break
 
 commandlist = {

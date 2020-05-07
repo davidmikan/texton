@@ -2,17 +2,13 @@
   <properties>
     <session>0</session>
   </properties>
+  <event id="e-0"/>
   <room id="0">
     <properties>
       <name>Starter Room</name>
       <description>The walls are green.</description>
       <visited>False</visited>
     </properties>
-    <object id="001" type="standard">
-      <properties>
-        <name>irgendwas</name>
-      </properties>
-    </object>
     <player>
       <properties>
         <name>None</name>
@@ -21,6 +17,11 @@
         <object id="002" type="test">
           <properties>
             <name>Letter</name>
+          </properties>
+        </object>
+        <object id="001" type="standard">
+          <properties>
+            <name>irgendwas</name>
           </properties>
         </object>
       </inventory>

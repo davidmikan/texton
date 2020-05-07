@@ -6,12 +6,12 @@ def loadworld(gamefile):
                 xmlstring = file.read()
         tree = etree.XML(xmlstring)
         #transferring informations to objects via object's method
-        world = objects.World(tree)
+        objects.world = objects.World(tree)
         #load player 
-        for room in world.rooms.values():
+        for room in objects.world.rooms.values():
             if hasattr(room, 'player'):
-                global player
-                player = room.player
+                objects.activeroom = room
+                objects.player = room.player
                 del room.player
         #add connections id to room.connections
         # for con in world.connections:
@@ -20,7 +20,7 @@ def loadworld(gamefile):
         #         world.rooms[x].connections[con.id] = con.properties['connects']
         #     finish
         print("Loaded World!")
-        return world, player
+        return 'Success!'
 
 def saveworld(rootobj, playerobj, gamefile):
         try:
@@ -33,3 +33,6 @@ def saveworld(rootobj, playerobj, gamefile):
                 return True
         except:
                 return False
+
+def testin():
+        print(objects.world.rooms['0'])

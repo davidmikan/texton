@@ -1,8 +1,18 @@
 <world>
     <properties>
         <session>0</session>
+        <steps>0</steps>
     </properties>
-    <events></events>
+    <events>
+        <event id="e-0">
+            <if>
+                <equal>"string";3</equal>
+            </if>
+            <then>
+            
+            </then>
+        </event>
+    </events>
     <connection id="c-0">
         <link>0</link>
         <link>1</link>
