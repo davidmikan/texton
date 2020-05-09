@@ -1,31 +1,41 @@
 <world>
   <properties>
-    <session>0</session>
+    <session>2</session>
+    <steps>0</steps>
   </properties>
-  <event id="e-0"/>
+  <events>
+    <event id="e-0">
+      <math>irgendwas={o.001.name}</math>
+      <move>o.001;r.2</move>
+    </event>
+  </events>
+  <player inroom="0">
+    <properties>
+      <name></name>
+    </properties>
+    <inventory>
+      <object id="002" type="test">
+        <properties>
+          <name>Letter</name>
+        </properties>
+        <events/>
+      </object>
+    </inventory>
+  </player>
   <room id="0">
     <properties>
       <name>Starter Room</name>
       <description>The walls are green.</description>
       <visited>False</visited>
     </properties>
-    <player>
+    <events/>
+    <object id="001" type="standard">
       <properties>
-        <name>None</name>
+        <name>irgendwas</name>
+        <drinkable>True</drinkable>
       </properties>
-      <inventory>
-        <object id="002" type="test">
-          <properties>
-            <name>Letter</name>
-          </properties>
-        </object>
-        <object id="001" type="standard">
-          <properties>
-            <name>irgendwas</name>
-          </properties>
-        </object>
-      </inventory>
-    </player>
+      <events/>
+    </object>
   </room>
   <room id="1">
     <properties>
@@ -33,6 +43,7 @@
       <name>Raum 2</name>
       <description>The walls are green, but have a blue tint!</description>
     </properties>
+    <events/>
   </room>
   <room id="2">
     <properties>
@@ -40,18 +51,21 @@
       <description>This rooms walls are pink.</description>
       <visited>False</visited>
     </properties>
+    <events/>
     <object id="003" type="standard">
       <properties>
-        <name>0815</name>
+        <name>815</name>
       </properties>
+      <events/>
     </object>
   </room>
   <room id="3">
     <properties>
       <name>Raum 4</name>
-      <description>None</description>
+      <description></description>
       <visited>False</visited>
     </properties>
+    <events/>
   </room>
   <connection id="c-0">
     <properties>

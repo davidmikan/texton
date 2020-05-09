@@ -14,3 +14,18 @@ get_prop(etree.Element) : searches for properties tag and returns a dictionary o
 
 prop_xml(dictionary): takes dictionary with tag name as keys and tag text as values, returns etree.Element (<properties/> )
 
+
+# -- EVENTS DOCUMENTATION -- #
+
+General structure:
+    - Event-Object:     
+
+Sytax for objects/properties:
+    [objects]: o.id(.property)
+    [rooms]: r.id(.property)
+    [world]: w(.property)
+    [player]: p(.property)
+    ex.: o.001.name
+
+EventParser Modules:
+    compare

@@ -1,15 +1,15 @@
 <world>
     <properties>
-        <session>0</session>
+        <session>1</session>
         <steps>0</steps>
     </properties>
     <events>
         <event id="e-0">
             <if>
-                <equal>"string";3</equal>
+                <math>irgendwas={o.001.name}</math>
             </if>
             <then>
-            
+                <move>o.001;r.2</move>  
             </then>
         </event>
     </events>
@@ -28,20 +28,7 @@
         <key>001</key>
         </properties>
     </connection>
-    <room id='0'>
-        <properties>
-            <name>Starter Room</name>
-            <description>The walls are green.</description>
-            <visited>False</visited>
-        </properties>
-        <events></events>
-        <object id='001' type='standard'>
-            <properties>
-                <name>irgendwas</name>
-            </properties>
-            <events></events>
-        </object>
-        <player>
+    <player inroom='0'>
             <properties>
                 <name></name>
             </properties>
@@ -54,6 +41,20 @@
             </object>
             </inventory>
         </player>
+    <room id='0'>
+        <properties>
+            <name>Starter Room</name>
+            <description>The walls are green.</description>
+            <visited>False</visited>
+        </properties>
+        <events></events>
+        <object id='001' type='standard'>
+            <properties>
+                <name>irgendwas</name>
+                <drinkable>True</drinkable>
+            </properties>
+            <events></events>
+        </object>
     </room>
     <room id='1'>
         <properties>
@@ -61,6 +62,7 @@
             <name>Raum 2</name>
             <description>The walls are green, but have a blue tint!</description>
         </properties>
+        <events></events>
     </room>
     <room id='2' visited='False'>
         <properties>
@@ -68,10 +70,12 @@
             <description>This rooms walls are pink.</description>
             <visited>False</visited>
         </properties>
+        <events></events>
         <object id='003' type='standard'>
             <properties>
                 <name>0815</name>
             </properties>
+            <events></events>
         </object>
     </room>
     <room id='3'>
@@ -80,5 +84,6 @@
             <description></description>
             <visited>False</visited>
         </properties>
+        <events></events>
     </room>
 </world>
