@@ -27,6 +27,8 @@ class World:
         #self.eventhandler = EventHandler()
         return
 
+# --------------PROPERTIES------------ #
+
     def get_property(self, prop):
         if self.properties[prop]:
             return self.properties[prop]
@@ -37,6 +39,13 @@ class World:
         self.properties[prop] = value
         return self.properties[prop]
 
+# --------------ROOMS----------------- #
+
+    def get_room(self, roomid):
+        if self.rooms[roomid]:
+            return self.rooms[roomid]
+        return None
+
     def get_room_id(self, value, prop='name') -> str: # returns id of room with given property and value, standard is name
         for room in self.rooms.values():
             if value == room.get_property(prop): return room.id
@@ -44,25 +53,61 @@ class World:
 
     def get_active_room(self):
         return self.rooms[self.player.inroom]
+    
+    def set_active_room(self, roomid):
+        if roomid in self.rooms:
+            self.player.inroom = roomid
 
     def get_nearby_rooms(self) -> list: # returns the list of the rooms the player can go to
         return self.rooms[self.player.inroom].connectsto
 
-    def testfuncion(self):
-        return self.rooms['0'].objects['001']
+# ------------OBJECTS---------------- #
 
     def delete_object(self, objid):
-        return
+        if objid in self.player.inventory:
+            del self.player.inventory[objid]
+        for room in self.rooms.values():
+            if objid in room.objects:
+                del room.objects[objid]
+
+    def get_object(self, objid):
+        if objid in self.player.inventory:
+            return self.player.inventory[objid]
+        for room in self.rooms.values():
+            if objid in room.objects:
+                return room.objects[objid]
+        return None
+
+    def move_object(self, objid, destination):
+        obj = self.get_object(objid)
+        if obj is not None:
+            if destination == 'inv':
+                self.delete_object(objid)
+                self.player.inventory[objid] = obj
+                return
+            elif self.get_room(destination) is not None:
+                self.delete_object(objid)
+                self.get_room(destination).objects[objid] = obj
+                return
+            else:
+                raise Exception(f'Can\'t locate destination {destination}')
+        else:
+            raise Exception(f'Can\'t locate object {objid}')
 
 # --------- PLAYER ACTIONS ----------- #
 
-    def changeroom(self, roomid, byplayer=True):
+    def player_move_to_room(self, roomid, byplayer=True):
         if byplayer and roomid in self.get_nearby_rooms():
             self.player.inroom = roomid
         elif not byplayer and roomid in self.rooms:
             self.player.inroom = roomid
         else:
             raise Exception('Room not found!')
+
+    def move_obj_to_inv(self, objid):
+        x = self.get_object(objid)
+        self.player.inventory[objid] = x
+        del self.rooms['0'].objects[objid]
 
 # ------------------------------------ #
 

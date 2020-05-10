@@ -17,8 +17,18 @@ prop_xml(dictionary): takes dictionary with tag name as keys and tag text as val
 
 # -- EVENTS DOCUMENTATION -- #
 
-General structure:
-    - Event-Object:     
+event:
+ - sequence of predifined functions
+ - composed of an ifs and a thens part
+ - xml syntax: <functionname>argument1;argument2</functionname>
+
+event handler:
+ - manages execution of events
+ - manages active and inactive events
+
+event parser:
+ - decodes xml elements and returns an event object
+ - packs event objects to xml events
 
 Sytax for objects/properties:
     [objects]: o.id(.property)

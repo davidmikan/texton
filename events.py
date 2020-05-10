@@ -1,6 +1,7 @@
 from lxml import etree
 import re
 
+
 class EventHandler:
     def __init__(self, world, tree):
         self.world = world
@@ -19,15 +20,12 @@ class Event:
     def __init__(self, tree):
         self.id = tree.get('id')
         self.ifs = {}
-        for child in tree.find('if').getchildren():
-            self.ifs[child.tag] = child.text
         self.thens = {}
-        for child in tree.find('then').getchildren():
-            self.thens[child.tag] = child.text
         return
 
     def check_ifs(self):
         for condition in self.ifs:
+            pass
 
     def save(self):
         tree = etree.Element('event')
@@ -45,9 +43,28 @@ class Event:
     def __str__(self):
         return f'EVENT {self.id}: ifs:{self.ifs}, thens:{self.thens}'
 
-class EventParser:
+class EventParser: #WIP
 
-    def argument_parser(expr) -> list:
-        # -- READ ME -- #
-        #
-        
+    def parse_xml(self, tree) -> Event:
+        event = Event(tree)
+        # decode if elements
+        for child in tree.find('if').getchildren:
+            pass
+    
+    def decode_event(self, expr) -> list:
+        #takes string and returns list of arguments
+        pass
+    
+    def replace_var(self, expr): #takes string of form {o.001.name}, returns different types
+        expr = expr[1:-1].split('.')
+        if expr[0] == 'o':
+            if not expr[2]: return self.world.get_object(expr[1])
+            return self.world.get_object(expr[1]).get_property(expr[2])
+        elif expr[0] == 'r':
+            pass
+        elif expr[0] == 'w':
+            pass
+        elif expr[0] == 'p':
+            pass
+        else:
+            return None

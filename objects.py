@@ -63,7 +63,8 @@ class Player:
 
     def __str__(self):
         props = {key: prop for key, prop in self.properties.items()}
-        return f'PLAYER: inroom({self.inroom}), properties: {props}'
+        inv = [key for key in self.inventory]
+        return f'PLAYER: inroom({self.inroom}), properties: {props}, inventory:{inv}'
 
 
 # def findobjects(search, firstmatch=True) -> list:
