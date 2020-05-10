@@ -1,14 +1,17 @@
 from lxml import etree
+from json import load as jsonload
 from objects import Player
-from objects import Object
+from objects import GameObject
 from events import EventHandler
 from events import Event
 import converter as conv
 
-global world
-
 class World:
     def __init__(self, gamefile):
+        self.statusmessages = {}
+        with open('files/statusmsg.json', 'r') as f:
+            self.statusmessages = jsonload(f)
+        print(self.statusmessages['world_loading'])
         tree = conv.loadworld(gamefile)
         self.properties = conv.unpack_properties(tree)
         self.player = Player(tree.find('player'))
@@ -20,21 +23,18 @@ class World:
             self.connections[connection.get('id')] = Connection(connection)
             for link in self.connections[connection.get('id')].links:
                 self.rooms[link].connectsto.append(link)
-        self.events = {}
-        for event in tree.find('events').findall('event'):
-            self.events[event.get('id')] = Event(event)
         self.eventhandler = EventHandler(self, tree)
-        #self.eventhandler = EventHandler()
-        return
+        self.events = []
+        for event in tree.find('events').findall('event'):
+            self.events.append(event.get('id'))
+            self.eventhandler.events[event.get('id')] = Event(event)
+        print(self.statusmessages['world_loaded'])
 
 # --------------PROPERTIES------------ #
 
     def get_property(self, prop):
-        if self.properties[prop]:
-            return self.properties[prop]
-        else:
-            return ''
-            
+        return self.properties[prop] or ''
+        
     def set_property(self, prop, value):
         self.properties[prop] = value
         return self.properties[prop]
@@ -42,9 +42,7 @@ class World:
 # --------------ROOMS----------------- #
 
     def get_room(self, roomid):
-        if self.rooms[roomid]:
-            return self.rooms[roomid]
-        return None
+        return self.rooms.get(roomid)
 
     def get_room_id(self, value, prop='name') -> str: # returns id of room with given property and value, standard is name
         for room in self.rooms.values():
@@ -104,7 +102,7 @@ class World:
         else:
             raise Exception('Room not found!')
 
-    def move_obj_to_inv(self, objid):
+    def player_move_object(self, objid):
         x = self.get_object(objid)
         self.player.inventory[objid] = x
         del self.rooms['0'].objects[objid]
@@ -114,6 +112,9 @@ class World:
     def step(self):
         self.properties['steps'] += 1
         return self.properties['steps']
+
+    def say(self, key, *obj): # TODO: implement property replacement
+        print(self.statusmessages[key])
 
     def save(self, gamefile):
         self.properties['session'] += 1
@@ -143,10 +144,7 @@ class Connection:
         return
     
     def get_property(self, prop):
-        if self.properties[prop]:
-            return self.properties[prop]
-        else:
-            return ''
+        return self.properties[prop] or ''
 
     def set_property(self, prop, value):
         self.properties[prop] = value
@@ -161,6 +159,9 @@ class Connection:
             x.text = link
         return tree
 
+    def __str__(self):
+        return f'CONNECTION {self.id}: links:{self.links[0]+"<->"+self.links[1]}, properties:{self.properties}'
+
 class Room:
     def __init__(self, world, tree):
         self.world = world
@@ -169,17 +170,14 @@ class Room:
         self.properties = conv.unpack_properties(tree)
         self.objects = {}
         for obj in tree.findall('object'):
-            self.objects[obj.get('id')] = Object(obj)
+            self.objects[obj.get('id')] = GameObject(obj)
         self.events = {}
         for event in tree.find('events').findall('event'):
             self.events[event.get('id')] = Event(event)
         return
 
     def get_property(self, prop):
-        if self.properties[prop]:
-            return self.properties[prop]
-        else:
-            return ''
+        return self.properties[prop] or ''
             
     def set_property(self, prop, value):
         self.properties[prop] = value

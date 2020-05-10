@@ -2,7 +2,7 @@ from lxml import etree
 import converter as conv
 from events import Event
 
-class Object:
+class GameObject:
     def __init__(self, tree):
         self.id = tree.get('id')
         self.type = tree.get('type')
@@ -13,10 +13,7 @@ class Object:
         return
         
     def get_property(self, prop):
-        if self.properties[prop]:
-            return self.properties[prop]
-        else:
-            return ''
+        return self.properties[prop] or ''
             
     def set_property(self, prop, value):
         self.properties[prop] = value
@@ -40,13 +37,10 @@ class Player:
         self.properties = conv.unpack_properties(tree)
         self.inventory = {}
         for obj in tree.find('inventory').getchildren():
-            self.inventory[obj.get('id')] = Object(obj)
+            self.inventory[obj.get('id')] = GameObject(obj)
 
     def get_property(self, prop):
-        if self.properties[prop]:
-            return self.properties[prop]
-        else:
-            return ''
+        return self.properties[prop] or ''
             
     def set_property(self, prop, value):
         self.properties[prop] = value
@@ -65,20 +59,3 @@ class Player:
         props = {key: prop for key, prop in self.properties.items()}
         inv = [key for key in self.inventory]
         return f'PLAYER: inroom({self.inroom}), properties: {props}, inventory:{inv}'
-
-
-# def findobjects(search, firstmatch=True) -> list:
-#     matches = []
-#     # iterate first through inventory, then activerooms, then all rooms
-#     for objid, obj in player.inventory.items():
-#         if search in (obj.type, obj.properties['name']):
-#             matches.append(objid)
-#     for objid, obj in activeroom.objects.items():
-#         if search in (obj.type, obj.properties['name']):
-#             matches.append(objid)
-#     for room in world.rooms.values():
-#         for objid, obj in room.objects.items():
-#             if search in (obj.type, obj.properties['name']):
-#                 matches.append(objid)
-#     if firstmatch: return [matches[0]]
-#     else: return matches

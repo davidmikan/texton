@@ -5,7 +5,8 @@ import re
 class EventHandler:
     def __init__(self, world, tree):
         self.world = world
-        self.parser = []
+        self.events = {}
+        self.parser = EventParser(self)
 
     def check(self):
         self.world.properties['steps'] += 1
@@ -14,7 +15,7 @@ class EventHandler:
         return
 
     def __str__(self):
-        return f'EVENTHANDLER: DONT KNOW WHAT TO PUT IN HERE'
+        return 'EVENTHANDLER'
 
 class Event:
     def __init__(self, tree):
@@ -44,6 +45,9 @@ class Event:
         return f'EVENT {self.id}: ifs:{self.ifs}, thens:{self.thens}'
 
 class EventParser: #WIP
+
+    def __init__(self, handler):
+        self.handler = handler
 
     def parse_xml(self, tree) -> Event:
         event = Event(tree)

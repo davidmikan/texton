@@ -1,4 +1,6 @@
 {
+    "world_loading": "Loading...",
+    "world_loaded": "Loaded World!",
     "world_saving": "Saving...",
     "world_saved": "Saved World!",
     "world_savefailed": "Saving failed!",

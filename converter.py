@@ -18,7 +18,7 @@ def unpack_properties(element) -> dict:
         elif child.tag in ('id', 'key'):
             prop[child.tag] = child.text
         elif child.text in ['True', 'False']:
-            prop[child.tag] = bool(child.text=='True')
+            prop[child.tag] = child.text=='True'
         elif child.text.isdigit():
             prop[child.tag] = int(child.text)
         else:
