@@ -5,8 +5,12 @@
   </properties>
   <events>
     <event id="e-0">
-      <math>irgendwas={o.001.name}</math>
-      <move>o.001;r.2</move>
+      <if>
+        <math>irgendwas;{o.001.name}</math>
+      </if>
+      <then>
+        <move>{o.001};{r.2}</move>
+      </then>
     </event>
   </events>
   <player inroom="0">
@@ -55,6 +59,7 @@
     <object id="003" type="standard">
       <properties>
         <name>815</name>
+        <test>True</test>
       </properties>
       <events/>
     </object>

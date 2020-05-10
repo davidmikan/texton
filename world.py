@@ -14,7 +14,7 @@ class World:
         print(self.statusmessages['world_loading'])
         tree = conv.loadworld(gamefile)
         self.properties = conv.unpack_properties(tree)
-        self.player = Player(tree.find('player'))
+        self.player = Player(tree.find('player'), self)
         self.rooms = {}
         for room in tree.findall('room'):
             self.rooms[room.get('id')] = Room(self, room)
@@ -23,11 +23,11 @@ class World:
             self.connections[connection.get('id')] = Connection(connection)
             for link in self.connections[connection.get('id')].links:
                 self.rooms[link].connectsto.append(link)
-        self.eventhandler = EventHandler(self, tree)
+        self.eventhandler = EventHandler(self)
         self.events = []
         for event in tree.find('events').findall('event'):
             self.events.append(event.get('id'))
-            self.eventhandler.events[event.get('id')] = Event(event)
+            self.eventhandler.events[event.get('id')] = self.eventhandler.parser.parse_xml(event)
         print(self.statusmessages['world_loaded'])
 
 # --------------PROPERTIES------------ #
@@ -121,7 +121,7 @@ class World:
 
         worldtree = etree.Element('world')
         worldtree.append(conv.pack_properties(self.properties))
-        worldtree.append(conv.pack_events(self.events))
+        worldtree.append(conv.pack_events(self.events, self.eventhandler))
         worldtree.append(self.player.save())
         for room in self.rooms.values():
             worldtree.append(room.save())
@@ -170,10 +170,11 @@ class Room:
         self.properties = conv.unpack_properties(tree)
         self.objects = {}
         for obj in tree.findall('object'):
-            self.objects[obj.get('id')] = GameObject(obj)
-        self.events = {}
+            self.objects[obj.get('id')] = GameObject(obj, self.world)
+        self.events = []
         for event in tree.find('events').findall('event'):
-            self.events[event.get('id')] = Event(event)
+            self.events.append(event.get('id'))
+            self.world.eventhandler.events[event.get('id')] = self.world.eventhandler.parser.parse_xml(event)
         return
 
     def get_property(self, prop):
@@ -187,7 +188,7 @@ class Room:
         tree = etree.Element('room')
         tree.set('id', self.id)
         tree.append(conv.pack_properties(self.properties))
-        tree.append(conv.pack_events(self.events))
+        tree.append(conv.pack_events(self.events, self.world.eventhandler))
         for obj in self.objects.values():
             tree.append(obj.save())
         return tree

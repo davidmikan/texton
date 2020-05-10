@@ -17,10 +17,13 @@ prop_xml(dictionary): takes dictionary with tag name as keys and tag text as val
 
 # -- EVENTS DOCUMENTATION -- #
 
+# GENERAL STRUCTURE
+
 event:
  - sequence of predifined functions
  - composed of an ifs and a thens part
  - xml syntax: <functionname>argument1;argument2</functionname>
+    important: if argument is string make "~" at the beginning
 
 event handler:
  - manages execution of events
@@ -37,5 +40,9 @@ Sytax for objects/properties:
     [player]: p(.property)
     ex.: o.001.name
 
-EventParser Modules:
-    compare
+# EventParser
+
+replace_var():
+    takes a string of syntax "{object/property}", syntax for object as declared above
+    returns requested object or property or None if nothing matching is found
+

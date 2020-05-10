@@ -3,13 +3,15 @@ import converter as conv
 from events import Event
 
 class GameObject:
-    def __init__(self, tree):
+    def __init__(self, tree, world):
         self.id = tree.get('id')
         self.type = tree.get('type')
         self.properties = conv.unpack_properties(tree)
-        self.events = {}
+        self.world = world
+        self.events = []
         for event in tree.find('events').findall('event'):
-            self.events[event.get('id')] = Event(event)
+            self.events.append(event.get('id'))
+            self.world.eventhandler.events[event.get('id')] = self.world.eventhandler.parser.parse_xml(event)
         return
         
     def get_property(self, prop):
@@ -24,7 +26,7 @@ class GameObject:
         tree.set('id', self.id)
         tree.set('type', self.type)
         tree.append(conv.pack_properties(self.properties))
-        tree.append(conv.pack_events(self.events))
+        tree.append(conv.pack_events(self.events, self.world.eventhandler))
         return tree
 
     def __str__(self):
@@ -32,12 +34,13 @@ class GameObject:
         return f'OBJECT {self.id}: properties: {str(props)}'
 
 class Player:
-    def __init__(self, tree):
+    def __init__(self, tree, world):
         self.inroom = tree.get('inroom')
         self.properties = conv.unpack_properties(tree)
         self.inventory = {}
+        self.world = world
         for obj in tree.find('inventory').getchildren():
-            self.inventory[obj.get('id')] = GameObject(obj)
+            self.inventory[obj.get('id')] = GameObject(obj, self.world)
 
     def get_property(self, prop):
         return self.properties[prop] or ''
