@@ -39,6 +39,10 @@ class Player:
         self.properties = conv.unpack_properties(tree)
         self.inventory = {}
         self.world = world
+        self.events = []
+        for event in tree.find('events').findall('event'):
+            self.events.append(event.get('id'))
+            self.world.eventhandler.events[event.get('id')] = self.world.eventhandler.parser.parse_xml(event)
         for obj in tree.find('inventory').getchildren():
             self.inventory[obj.get('id')] = GameObject(obj, self.world)
 

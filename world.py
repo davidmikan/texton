@@ -80,15 +80,12 @@ class World:
         obj = self.get_object(objid)
         if obj is not None:
             if destination == 'inv':
-                self.delete_object(objid)
-                self.player.inventory[objid] = obj
-                return
+                container = self.player.inventory
             elif self.get_room(destination) is not None:
-                self.delete_object(objid)
-                self.get_room(destination).objects[objid] = obj
-                return
+                container = self.get_room(destination).objects
             else:
                 raise Exception(f'Can\'t locate destination {destination}')
+            container[objid] = obj
         else:
             raise Exception(f'Can\'t locate object {objid}')
 

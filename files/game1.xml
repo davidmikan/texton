@@ -6,10 +6,10 @@
     <events>
         <event id="e-0">
             <if>
-                <math>irgendwas={o.001.name}</math>
+                <compare>{o.001.name};==;$'irgendwas'</compare>
             </if>
             <then>
-                <move>o.001;r.2</move>  
+                <say>world_quit</say>  
             </then>
         </event>
     </events>
@@ -40,6 +40,7 @@
                 <events></events>
             </object>
             </inventory>
+            <events></events>
         </player>
     <room id='0'>
         <properties>

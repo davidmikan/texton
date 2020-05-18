@@ -1,58 +1,59 @@
 from lxml import etree
 import re
 
-
 class EventHandler:
     def __init__(self, world):
         self.world = world
         self.events = {}
-        self.parser = EventParser(self)
+        self.parser = EventInterpreter(self)
 
     def check(self):
         self.world.properties['steps'] += 1
-        # execute world events
+        # execute events in order world, playerobjects, activeroom, activeobjects
         for eventid in self.world.events:
             self.check_event(eventid)
-        # execute active room events
-        for eventid in self.world.get_active_room().events:
-            self.check_event(eventid)
-        # execute active room object events
-        for obj in self.world.get_active_room().objects.values():
-            for eventid in obj.events:
-                self.check_event(eventid)
-        # players inventory objects events
         for obj in self.world.player.inventory.values():
             for eventid in obj.events:
                 self.check_event(eventid)
+        for eventid in self.world.get_active_room().events:
+            self.check_event(eventid)
+        for obj in self.world.get_active_room().objects.values():
+            for eventid in obj.events:
+                self.check_event(eventid)
+
+    def get_event(self, id):
+        return self.events[id] or None
 
     # -- event execution -- #
 
     def check_event(self, eventid):
-        event = self.get_event(eventid)
-        if event.check_ifs():
-            self.execute_thens(event)
-        return
-            
-        print('Executed event', eventid)
-        return
+        if self.check_ifs(eventid): 
+            self.execute_thens(eventid)
 
-    def check_thens(self, event):
-        for function, arguments in event.thens.items:
-            function = function + '(arguments)'
-            arguments = self.parser.decode_arguments(arguments)
-            exex(function)
-        return
+    def check_ifs(self,eventid):
+        return all(self.compare(oneif) for oneif in self.events[eventid].ifs.values())
 
-            
+    def execute_thens(self, eventid):
+        dictionary = {
+            'move': self.world.move_object,
+            'say': self.say
+        }
+        for function, args in self.get_event(eventid).thens.items():
+            args = self.parser.decode_arguments(args)
+            dictionary[function](args)
 
     # -- pre-defined functions -- #
 
+    def say(self, list):
+        self.world.say(list[0])
+
+    def compare(self, args) -> bool:
+        args = self.parser.decode_arguments(args)
+        result = eval(str(args[0]) + args[1] + str(args[2]))
+        return result
 
     def save(self):
         return
-
-    def get_event(self, id):
-        return self.events[id] or None
 
     def __str__(self):
         return 'EVENTHANDLER'
@@ -62,7 +63,6 @@ class Event:
         self.id = tree.get('id')
         self.ifs = {}
         self.thens = {}
-        return
 
     def check_ifs(self): #checks condition an return Boolean
         for condition in self.ifs:
@@ -71,13 +71,14 @@ class Event:
     def __str__(self):
         return f'EVENT {self.id}: ifs:{self.ifs}, thens:{self.thens}'
 
-class EventParser:
+class EventInterpreter:
 
     def __init__(self, handler):
         self.handler = handler
 
     # -- Loading -- #
         
+
     def parse_xml(self, tree) -> Event:
         event = Event(tree)
         # decode if elements
@@ -85,7 +86,8 @@ class EventParser:
             event.ifs[child.tag] = child.text.split(';')
         # decode then elements
         for child in tree.find('then').getchildren():
-            event.thens[child.tag] = child.text.split(';')
+            if child.text:
+                event.thens[child.tag] = child.text.split(';')
         return event
 
     # -- Saving -- #
@@ -112,20 +114,22 @@ class EventParser:
         #takes list of pre-arguments and returns list of arguments
         arguments = []
         for x in prearg:
-            if x[0] == '{' and x[-1] == '}':
+            
+            if x.startswith('{') and x.endswith('}'):
                 arguments.append(self.replace_var(x))
             else:
                 if x in ['True', 'False']:
                     arguments.append(x == 'True')
                 elif x.isdigit():
                     arguments.append(int(x))
-                elif x[0] == '~':
-                    arguments.append(x[1:])
+                elif x[0] == '$':
+                    arguments.append(str(x[1:]))
                 else:
                     arguments.append(x)
         return arguments
-    
+
     def replace_var(self, expr): #see documentation section "EventParser"
+        
         expr = expr[1:-1].split('.')
         if expr[0] == 'o':
             if len(expr) == 2: return self.handler.world.get_object(expr[1])
@@ -139,5 +143,6 @@ class EventParser:
         elif expr[0] == 'p':
             if len(expr) == 1: return self.handler.world
             return self.handler.world.get_property(expr[1])
+        
         else:
             return None
