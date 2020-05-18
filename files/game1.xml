@@ -6,10 +6,10 @@
     <events>
         <event id="e-0">
             <if>
-                <compare>{o.001.name};==;$'irgendwas'</compare>
+                <compare>{w.steps};>;3</compare>
             </if>
             <then>
-                <say>world_quit</say>  
+                <print>Test</print>
             </then>
         </event>
     </events>

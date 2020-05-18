@@ -1,15 +1,15 @@
 <world>
   <properties>
     <session>2</session>
-    <steps>0</steps>
+    <steps>1</steps>
   </properties>
   <events>
     <event id="e-0">
       <if>
-        <math>irgendwas;{o.001.name}</math>
+        <compare>{w.steps};&gt;;3</compare>
       </if>
       <then>
-        <move>{o.001};{r.2}</move>
+        <print>Test</print>
       </then>
     </event>
   </events>
@@ -58,8 +58,7 @@
     <events/>
     <object id="003" type="standard">
       <properties>
-        <name>815</name>
-        <test>True</test>
+        <name>0815</name>
       </properties>
       <events/>
     </object>

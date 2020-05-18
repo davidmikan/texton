@@ -1,6 +1,6 @@
 from lxml import etree
 
-def loadworld(gamefile):
+def loadworld(gamefile): # can be moved to World
     with open(gamefile, 'r') as f:
         xmlstring = etree.parse(f)
         return xmlstring
@@ -11,6 +11,11 @@ def saveworld(rootobj, gamefile):
         return
 
 def unpack_properties(element) -> dict:
+    """
+    takes etree Element
+    returns dictionary for children of <properties> tag with 
+    key=tag, value=text
+    """
     prop = {}
     for child in element.find('properties').getchildren():
         if not child.text:
@@ -28,6 +33,10 @@ def unpack_properties(element) -> dict:
     return prop
    
 def pack_properties(prop):
+    """
+    takes dictionary
+    returns etree Element 'properties'
+    """
     propertyel = etree.Element('properties')
     for key in prop:
         x = etree.Element(key)

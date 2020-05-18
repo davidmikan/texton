@@ -1,15 +1,27 @@
 from lxml import etree
 import re
 
+# nur für jetzt, wird noch geändert!
+
 class EventHandler:
+
+    """
+    manages active events
+    executes events
+    contains predifined functions for Events
+    """
+
     def __init__(self, world):
         self.world = world
         self.events = {}
-        self.parser = EventInterpreter(self)
+        self.parser = EventDecoder(self)
 
     def check(self):
+        """
+        executes specifically active events
+        in order world, playerobjects, activeroom, activeobjects
+        """
         self.world.properties['steps'] += 1
-        # execute events in order world, playerobjects, activeroom, activeobjects
         for eventid in self.world.events:
             self.check_event(eventid)
         for obj in self.world.player.inventory.values():
@@ -27,6 +39,9 @@ class EventHandler:
     # -- event execution -- #
 
     def check_event(self, eventid):
+        """
+        executes event when its if statements return true
+        """
         if self.check_ifs(eventid): 
             self.execute_thens(eventid)
 
@@ -34,20 +49,30 @@ class EventHandler:
         return all(self.compare(oneif) for oneif in self.events[eventid].ifs.values())
 
     def execute_thens(self, eventid):
-        dictionary = {
-            'move': self.world.move_object,
-            'say': self.say
+        """
+        executes 'then part' of an event
+        names of functions and their corresponding object are mapped in a dictionary
+        before execution placeholders in arguments are replaced by true value
+        """
+        # T E M P O R A R Y ! ! ! ! !
+        functions = {
+            'move': [self.world.move_object, 2],
+            'say': [self.world.say, 1],
+            'print': [print, 1]
         }
         for function, args in self.get_event(eventid).thens.items():
             args = self.parser.decode_arguments(args)
-            dictionary[function](args)
-
-    # -- pre-defined functions -- #
-
-    def say(self, list):
-        self.world.say(list[0])
+            if functions[function][1] == 1:
+                functions[function][0](args[0])
+            elif functions[function][1] == 2:
+                functions[function][0](args[0], args[1])
+            elif functions[function][1] == 3:
+                functions[function][0](args[0], args[1], args[2])
 
     def compare(self, args) -> bool:
+        """
+        args = [value1, operator, value2]
+        """
         args = self.parser.decode_arguments(args)
         result = eval(str(args[0]) + args[1] + str(args[2]))
         return result
@@ -59,19 +84,25 @@ class EventHandler:
         return 'EVENTHANDLER'
 
 class Event:
+
+    """
+    executable object
+    syntax of self.ifs and self.ifs : {functionname: list of arguments}
+    """
+
     def __init__(self, tree):
         self.id = tree.get('id')
         self.ifs = {}
         self.thens = {}
 
-    def check_ifs(self): #checks condition an return Boolean
-        for condition in self.ifs:
-            pass
-
     def __str__(self):
         return f'EVENT {self.id}: ifs:{self.ifs}, thens:{self.thens}'
 
-class EventInterpreter:
+class EventDecoder:
+
+    """
+    for decoding events, which are packed in xml
+    """
 
     def __init__(self, handler):
         self.handler = handler
@@ -80,6 +111,11 @@ class EventInterpreter:
         
 
     def parse_xml(self, tree) -> Event:
+
+        """
+        takes lxml tree element <event>
+        returns Event
+        """
         event = Event(tree)
         # decode if elements
         for child in tree.find('if').getchildren():
@@ -93,7 +129,12 @@ class EventInterpreter:
     # -- Saving -- #
 
     def pack_to_xml(self, event):
-        # takes event object returns etree element
+        
+        """
+        takes event object
+        return lxml tree object <event>
+        """
+
         tree = etree.Element('event')
         tree.set('id', event.id)
         ifs = etree.SubElement(tree, 'if')
@@ -111,10 +152,13 @@ class EventInterpreter:
     # -- Executing -- #
 
     def decode_arguments(self, prearg) -> list:
-        #takes list of pre-arguments and returns list of arguments
+        """
+        takes list of pre-arguments
+        replaces placesholder with true values
+        returns list of arguments
+        """
         arguments = []
         for x in prearg:
-            
             if x.startswith('{') and x.endswith('}'):
                 arguments.append(self.replace_var(x))
             else:
@@ -122,15 +166,24 @@ class EventInterpreter:
                     arguments.append(x == 'True')
                 elif x.isdigit():
                     arguments.append(int(x))
-                elif x[0] == '$':
-                    arguments.append(str(x[1:]))
                 else:
                     arguments.append(x)
         return arguments
 
-    def replace_var(self, expr): #see documentation section "EventParser"
-        
+    def replace_var(self, expr): 
+        """
+        takes a string of like "{object/property}", with usaual syntax for placeholders
+        returns requested object or property or None if nothing matching is found
+        """
         expr = expr[1:-1].split('.')
+        switch = {
+            'o': (self.handler.world.get_object(expr[1]), 2),
+            'r': (self.handler.world.get_room(expr[1]), 2),
+            'w': (self.handler.world, 1),
+            'p': (self.handler.world.player, 1)
+        }
+
+
         if expr[0] == 'o':
             if len(expr) == 2: return self.handler.world.get_object(expr[1])
             return self.handler.world.get_object(expr[1]).get_property(expr[2])
@@ -141,8 +194,7 @@ class EventInterpreter:
             if len(expr) == 1: return self.handler.world
             return self.handler.world.get_property(expr[1])
         elif expr[0] == 'p':
-            if len(expr) == 1: return self.handler.world
-            return self.handler.world.get_property(expr[1])
-        
+            if len(expr) == 1: return self.handler.world.player
+            return self.handler.world.player.get_property(expr[1])
         else:
             return None

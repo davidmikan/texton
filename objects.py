@@ -3,6 +3,12 @@ import converter as conv
 from events import Event
 
 class GameObject:
+    
+    """
+    general object
+    self.properties = {name: value}
+    """
+    
     def __init__(self, tree, world):
         self.id = tree.get('id')
         self.type = tree.get('type')
@@ -15,7 +21,7 @@ class GameObject:
         return
         
     def get_property(self, prop):
-        return self.properties[prop] or ''
+        return self.properties.get(prop)
             
     def set_property(self, prop, value):
         self.properties[prop] = value
@@ -34,6 +40,12 @@ class GameObject:
         return f'OBJECT {self.id}: properties: {str(props)}'
 
 class Player:
+
+    """
+    self.properties = {name: value}
+    self.inventory = {object-id: GameObject}
+    """
+
     def __init__(self, tree, world):
         self.inroom = tree.get('inroom')
         self.properties = conv.unpack_properties(tree)
@@ -47,7 +59,7 @@ class Player:
             self.inventory[obj.get('id')] = GameObject(obj, self.world)
 
     def get_property(self, prop):
-        return self.properties[prop] or ''
+        return self.properties.get(prop)
             
     def set_property(self, prop, value):
         self.properties[prop] = value

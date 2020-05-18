@@ -1,13 +1,24 @@
 from lxml import etree
 from json import load as jsonload
-from objects import Player
-from objects import GameObject
-from events import EventHandler
-from events import Event
+from objects import Player, GameObject
+from events import EventHandler, Event
 import converter as conv
 
 class World:
+
+    """
+    root object of the game
+    contains all methods for actions
+    self.rooms= {room-id: Room object}
+    self.player= Player object
+    self.eventhandler= EventHandler objects containing Events ...
+    self.properties= {name: value}
+    """
+
     def __init__(self, gamefile):
+        """
+        takes path to a xml-gamefile and extracts the world
+        """
         self.statusmessages = {}
         with open('files/statusmsg.json', 'r') as f:
             self.statusmessages = jsonload(f)
@@ -33,7 +44,7 @@ class World:
 # --------------PROPERTIES------------ #
 
     def get_property(self, prop):
-        return self.properties[prop] or ''
+        return self.properties.get(prop)
         
     def set_property(self, prop, value):
         self.properties[prop] = value
@@ -44,7 +55,11 @@ class World:
     def get_room(self, roomid):
         return self.rooms.get(roomid)
 
-    def get_room_id(self, value, prop='name') -> str: # returns id of room with given property and value, standard is name
+    def get_room_id(self, value, prop='name') -> str:
+        """
+        takes value, opt. property 
+        returns id of room
+        """
         for room in self.rooms.values():
             if value == room.get_property(prop): return room.id
         raise Exception(f'No Room with {prop} = {value}!')
@@ -62,6 +77,10 @@ class World:
 # ------------OBJECTS---------------- #
 
     def delete_object(self, objid):
+        """
+        takes object-id
+        and deletes the object
+        """
         if objid in self.player.inventory:
             del self.player.inventory[objid]
         for room in self.rooms.values():
@@ -77,6 +96,12 @@ class World:
         return None
 
     def move_object(self, objid, destination):
+        """
+        objid: object-id
+        destination: room-id or 'inv' for inventory
+        moves object from its current container into the destination container
+        TODO: add byplayer input and functionality
+        """
         obj = self.get_object(objid)
         if obj is not None:
             if destination == 'inv':
@@ -91,15 +116,29 @@ class World:
 
 # --------- PLAYER ACTIONS ----------- #
 
-    def player_move_to_room(self, roomid, byplayer=True):
+    def move_to_room(self, roomid, byplayer=True):
+        """
+        byplayer (default True):   
+            if True, check for connection from active room and 
+            whether it is locked
+            if False, always move player to room
+        returns entered Room or None
+        TODO: check if connection locked, if yes -> unlock_room
+        TODO: accept room name as well
+        """
         if byplayer and roomid in self.get_nearby_rooms():
             self.player.inroom = roomid
+            return self.rooms[roomid]
         elif not byplayer and roomid in self.rooms:
             self.player.inroom = roomid
+            return self.rooms[roomid]
         else:
-            raise Exception('Room not found!')
+            return None
 
     def player_move_object(self, objid):
+        """ 
+        TODO: merge into move_object
+        """
         x = self.get_object(objid)
         self.player.inventory[objid] = x
         del self.rooms['0'].objects[objid]
@@ -114,6 +153,10 @@ class World:
         print(self.statusmessages[key])
 
     def save(self, gamefile):
+        """
+        gamefile: filepath
+        converts itself into xml string and saves it in gamefile
+        """
         self.properties['session'] += 1
 
         worldtree = etree.Element('world')
@@ -125,7 +168,6 @@ class World:
         for con in self.connections.values():
             worldtree.append(con.save())
         conv.saveworld(worldtree, gamefile)
-        return 'Saved World!'
 
     def __str__(self):
         props = {key: prop for key, prop in self.properties.items()}
@@ -133,6 +175,12 @@ class World:
         return f'WORLD: properties={str(props)}, rooms={str(rooms)}'
 
 class Connection:
+
+    """
+    represents a connection between 2 rooms
+    self.links= [room-ids]
+    """
+
     def __init__(self, tree):
         self.id = tree.get('id')
         self.properties = conv.unpack_properties(tree)
@@ -141,7 +189,7 @@ class Connection:
         return
     
     def get_property(self, prop):
-        return self.properties[prop] or ''
+        return self.properties.get(prop)
 
     def set_property(self, prop, value):
         self.properties[prop] = value
@@ -160,6 +208,12 @@ class Connection:
         return f'CONNECTION {self.id}: links:{self.links[0]+"<->"+self.links[1]}, properties:{self.properties}'
 
 class Room:
+
+    """
+    self.objects = {object-id: GameObject}
+    self.properties = {name: value}
+    """
+    
     def __init__(self, world, tree):
         self.world = world
         self.id = tree.get('id')
@@ -175,7 +229,7 @@ class Room:
         return
 
     def get_property(self, prop):
-        return self.properties[prop] or ''
+        return self.properties.get(prop)
             
     def set_property(self, prop, value):
         self.properties[prop] = value
