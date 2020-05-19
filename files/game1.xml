@@ -30,7 +30,7 @@
     </connection>
     <player inroom='0'>
             <properties>
-                <name></name>
+                <name>test</name>
             </properties>
             <inventory>
             <object id='002' type='test'>

@@ -176,25 +176,35 @@ class EventDecoder:
         returns requested object or property or None if nothing matching is found
         """
         expr = expr[1:-1].split('.')
-        switch = {
+        try:
+            switch = {
             'o': (self.handler.world.get_object(expr[1]), 2),
             'r': (self.handler.world.get_room(expr[1]), 2),
             'w': (self.handler.world, 1),
             'p': (self.handler.world.player, 1)
-        }
-
-
-        if expr[0] == 'o':
-            if len(expr) == 2: return self.handler.world.get_object(expr[1])
-            return self.handler.world.get_object(expr[1]).get_property(expr[2])
-        elif expr[0] == 'r':
-            if len(expr) == 2: return self.handler.world.get_room(expr[1])
-            return self.handler.world.get_room(expr[1]).get_property(expr[2])
-        elif expr[0] == 'w':
-            if len(expr) == 1: return self.handler.world
-            return self.handler.world.get_property(expr[1])
-        elif expr[0] == 'p':
-            if len(expr) == 1: return self.handler.world.player
-            return self.handler.world.player.get_property(expr[1])
-        else:
+            }
+        except IndexError:
+            switch = {
+            'w': (self.handler.world, 1),
+            'p': (self.handler.world.player, 1)
+            }
+        try:
+            if len(expr) == switch[expr[0]][1]: return switch[expr[0]][0]
+            return switch[expr[0]][0].get_property(expr[switch[expr[0]][1]])
+        except:
             return None
+
+        # if expr[0] == 'o':
+        #     if len(expr) == 2: return self.handler.world.get_object(expr[1])
+        #     return self.handler.world.get_object(expr[1]).get_property(expr[2])
+        # elif expr[0] == 'r':
+        #     if len(expr) == 2: return self.handler.world.get_room(expr[1])
+        #     return self.handler.world.get_room(expr[1]).get_property(expr[2])
+        # elif expr[0] == 'w':
+        #     if len(expr) == 1: return self.handler.world
+        #     return self.handler.world.get_property(expr[1])
+        # elif expr[0] == 'p':
+        #     if len(expr) == 1: return self.handler.world.player
+        #     return self.handler.world.player.get_property(expr[1])
+        # else:
+        #     return None
