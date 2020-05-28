@@ -29,6 +29,7 @@ class World:
         self.rooms = {}
         for room in tree.findall('room'):
             self.rooms[room.get('id')] = Room(self, room)
+            print(self.rooms[room.get('id')])
         self.connections = {}
         for connection in tree.findall('connection'):
             self.connections[connection.get('id')] = Connection(connection)
@@ -61,7 +62,8 @@ class World:
         returns id of room
         """
         for room in self.rooms.values():
-            if value == room.get_property(prop): return room.id
+            if value == room.properties[prop]: 
+                return room.id
         raise Exception(f'No Room with {prop} = {value}!')
 
     def get_active_room(self):
@@ -126,6 +128,7 @@ class World:
         TODO: check if connection locked, if yes -> unlock_room
         TODO: accept room name as well
         """
+        print(self.get_nearby_rooms())
         if byplayer and roomid in self.get_nearby_rooms():
             self.player.inroom = roomid
             return self.rooms[roomid]
@@ -247,4 +250,4 @@ class Room:
     def __str__(self):
         props = {key: prop for key, prop in self.properties.items()}
         objects = [obj for obj in self.objects]
-        return f'ROOM {self.id}: properties={str(props)}, objects={str(objects)}'
+        return f'[ROOM {self.id}] properties={str(props)}, objects={str(objects)}, connects to={str(self.connectsto)}'

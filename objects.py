@@ -3,7 +3,6 @@ import converter as conv
 from events import Event
 
 class GameObject:
-    
     """
     general object
     self.properties = {name: value}

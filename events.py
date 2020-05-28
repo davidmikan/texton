@@ -175,6 +175,9 @@ class EventDecoder:
         takes a string of like "{object/property}", with usaual syntax for placeholders
         returns requested object or property or None if nothing matching is found
         """
+        pattern = re.compile(r'([wpro])(\d*)\.(.+)')
+        
+
         expr = expr[1:-1].split('.')
         try:
             switch = {
