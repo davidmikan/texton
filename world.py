@@ -5,14 +5,17 @@ from events import EventHandler, Event
 import converter as conv
 
 class World:
-
     """
     root object of the game
     contains all methods for actions
-    self.rooms= {room-id: Room object}
-    self.player= Player object
-    self.eventhandler= EventHandler objects containing Events ...
-    self.properties= {name: value}
+    self.rooms
+        {room-id: Room object}
+    self.player
+        Player object
+    self.eventhandler
+        EventHandler objects containing Events
+    self.properties
+        {name: value}
     """
 
     def __init__(self, gamefile):
@@ -29,56 +32,29 @@ class World:
         self.rooms = {}
         for room in tree.findall('room'):
             self.rooms[room.get('id')] = Room(self, room)
-            print(self.rooms[room.get('id')])
         self.connections = {}
         for connection in tree.findall('connection'):
             self.connections[connection.get('id')] = Connection(connection)
-            for link in self.connections[connection.get('id')].links:
-                self.rooms[link].connectsto.append(link)
+            # -- WIP -- #            
         self.eventhandler = EventHandler(self)
         self.events = []
         for event in tree.find('events').findall('event'):
             self.events.append(event.get('id'))
             self.eventhandler.events[event.get('id')] = self.eventhandler.parser.parse_xml(event)
-        print(self.statusmessages['world_loaded'])
+        for room in self.rooms.values(): print(room)
 
-# --------------PROPERTIES------------ #
+#   ---tools---
 
-    def get_property(self, prop):
-        return self.properties.get(prop)
-        
-    def set_property(self, prop, value):
-        self.properties[prop] = value
-        return self.properties[prop]
-
-# --------------ROOMS----------------- #
-
-    def get_room(self, roomid):
-        return self.rooms.get(roomid)
-
-    def get_room_id(self, value, prop='name') -> str:
+    def __set_active_room(self, roomid):
         """
-        takes value, opt. property 
-        returns id of room
+        sets player.inroom to provided id
         """
-        for room in self.rooms.values():
-            if value == room.properties[prop]: 
-                return room.id
-        raise Exception(f'No Room with {prop} = {value}!')
-
-    def get_active_room(self):
-        return self.rooms[self.player.inroom]
-    
-    def set_active_room(self, roomid):
         if roomid in self.rooms:
             self.player.inroom = roomid
+            return self.get_active_room()
+        else: raise IndexError(f'Room with ID {roomid} not existent!')
 
-    def get_nearby_rooms(self) -> list: # returns the list of the rooms the player can go to
-        return self.rooms[self.player.inroom].connectsto
-
-# ------------OBJECTS---------------- #
-
-    def delete_object(self, objid):
+    def __delete_object(self, objid):
         """
         takes object-id
         and deletes the object
@@ -89,6 +65,18 @@ class World:
             if objid in room.objects:
                 del room.objects[objid]
 
+#   ---
+
+    def get_property(self, prop):
+        return self.properties.get(prop)
+        
+    def set_property(self, prop, value):
+        self.properties[prop] = value
+        return self.properties[prop]
+
+    def get_room(self, roomid):
+        return self.rooms.get(roomid)
+
     def get_object(self, objid):
         if objid in self.player.inventory:
             return self.player.inventory[objid]
@@ -97,12 +85,58 @@ class World:
                 return room.objects[objid]
         return None
 
+    def get_room_id(self, value, prop='name') -> str:
+        """
+        value
+
+        prop (default 'name'): property to match the value to
+
+        return: id of room
+        TODO: 
+            * alternative_names property ("Wien Mitte - The Mall" -> "mall"/"wien mitte")
+            * search through multiple properties
+            * option to return first match, or all the matches
+        """
+        for room in self.rooms.values():
+            if value.lower == room.properties[prop].lower:
+                return room.id
+        return None
+
+    def get_object_id(self, value, prop='name'):
+        """
+        TODO:
+            * implement :p
+        """
+        pass
+
+    def get_active_room(self):
+        return self.rooms.get(self.player.inroom)
+
+    def get_nearby_rooms(self, roomid) -> list:
+        """
+        return: 
+            list of connection ids that link provided room
+        TODO:
+            WIP
+        """
+        matches = []
+        for connection in self.connections.values():
+            links = connection.links
+            if roomid in links:
+                links.remove(roomid)
+                matches.append(connection.id)
+        return matches                              
+
     def move_object(self, objid, destination):
         """
-        objid: object-id
-        destination: room-id or 'inv' for inventory
-        moves object from its current container into the destination container
-        TODO: add byplayer input and functionality
+        objid: 
+            object-id
+        destination: 
+            room-id or 'inv' for inventory
+            moves 
+            object from its current container into the destination container
+        TODO: 
+            * add distinction //david:?
         """
         obj = self.get_object(objid)
         if obj is not None:
@@ -124,14 +158,14 @@ class World:
             if True, check for connection from active room and 
             whether it is locked
             if False, always move player to room
-        returns entered Room or None
-        TODO: check if connection locked, if yes -> unlock_room
-        TODO: accept room name as well
+        return: 
+            entered Room or None
+        TODO: 
+            WIP
+            * check if connection locked, if yes -> unlock_room
         """
-        print(self.get_nearby_rooms())
         if byplayer and roomid in self.get_nearby_rooms():
-            self.player.inroom = roomid
-            return self.rooms[roomid]
+            return self.__set_active_room(roomid)
         elif not byplayer and roomid in self.rooms:
             self.player.inroom = roomid
             return self.rooms[roomid]
@@ -140,7 +174,8 @@ class World:
 
     def player_move_object(self, objid):
         """ 
-        TODO: merge into move_object
+        TODO: 
+            merge into move_object
         """
         x = self.get_object(objid)
         self.player.inventory[objid] = x
@@ -188,7 +223,8 @@ class Connection:
         self.id = tree.get('id')
         self.properties = conv.unpack_properties(tree)
         self.links = []
-        for link in tree.findall('link'): self.links.append(link.text)
+        for link in tree.findall('link'): 
+            self.links.append(link.text)
         return
     
     def get_property(self, prop):
@@ -211,7 +247,6 @@ class Connection:
         return f'CONNECTION {self.id}: links:{self.links[0]+"<->"+self.links[1]}, properties:{self.properties}'
 
 class Room:
-
     """
     self.objects = {object-id: GameObject}
     self.properties = {name: value}

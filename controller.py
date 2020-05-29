@@ -1,14 +1,13 @@
 import world as wrld
 
 def go_to_room(uinput):
-    old_room = world.get_active_room()
-    active_room = world.move_to_room(world.get_room_id(uinput))
-    if active_room is not None:
+    destination = world.move_to_room(world.get_room_id(uinput)) or world.move_to_room(uinput)
+    if destination is not None:
         description = ''
-        if active_room.get_property('visited'): description += '\n' + active_room.get_property('description')
+        if destination.get_property('visited'): description += '\n' + destination.get_property('description')
         print(
             'You\'re in',
-            active_room.get_property('name'),
+            destination.get_property('name'),
             'now!',
             description
         )
@@ -16,8 +15,19 @@ def go_to_room(uinput):
         world.say('room_notfound')
 
 def teleport_to_room(uinput):
-    if world.set_active_room(world.get_room_id(uinput)) is not None:
-        print('woosh')
+    """
+    TODO: dont bypass World.move_to_room, use it's byplayer functionality
+    """
+    destination = world.move_to_room(world.get_room_id(uinput), byplayer=False) or world.move_to_room(uinput, byplayer=False)
+    if destination is not None:
+        description = ''
+        if destination.get_property('visited'): description += '\n' + destination.get_property('description')
+        print(
+            'You\'re in',
+            destination.get_property('name'),
+            'now!',
+            description
+        )
     else:
         world.say('room_notfound')
 
