@@ -164,7 +164,7 @@ class World:
             WIP
             * check if connection locked, if yes -> unlock_room
         """
-        if byplayer and roomid in self.get_nearby_rooms():
+        if byplayer and roomid in self.get_nearby_rooms(roomid):
             return self.__set_active_room(roomid)
         elif not byplayer and roomid in self.rooms:
             self.player.inroom = roomid
@@ -255,7 +255,6 @@ class Room:
     def __init__(self, world, tree):
         self.world = world
         self.id = tree.get('id')
-        self.connectsto = []
         self.properties = conv.unpack_properties(tree)
         self.objects = {}
         for obj in tree.findall('object'):
