@@ -43,3 +43,23 @@ Sytax for objects/properties:
     [world]: w(.property)
     [player]: p(.property)
     ex.: o.001.name
+
+
+WORLD [game1.xml]
+    ╔══════════╗
+    ║ ROOM [0] ║
+    ╚══════════╝
+        »properties«
+        name: Starter Room
+        description: Beschreibung
+        »inventory«
+        ╔══════════════╗
+        ║ OBJECT [o-0] ║
+        ╚══════════════╝
+            »properties«
+            name: irgendwas
+            description: Ein Objekt
+    ╔══════════╗
+    ║ ROOM [1] ║
+    ╚══════════╝
+    

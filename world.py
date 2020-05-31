@@ -1,5 +1,4 @@
 from lxml import etree
-from json import load as jsonload
 from objects import Player, GameObject
 from events import EventHandler, Event
 import converter as conv
@@ -22,10 +21,7 @@ class World:
         """
         takes path to a xml-gamefile and extracts the world
         """
-        self.statusmessages = {}
-        with open('files/statusmsg.json', 'r') as f:
-            self.statusmessages = jsonload(f)
-        print(self.statusmessages['world_loading'])
+        self.gamefile = gamefile
         tree = conv.loadworld(gamefile)
         self.properties = conv.unpack_properties(tree)
         self.player = Player(tree.find('player'), self)
@@ -41,7 +37,6 @@ class World:
         for event in tree.find('events').findall('event'):
             self.events.append(event.get('id'))
             self.eventhandler.events[event.get('id')] = self.eventhandler.parser.parse_xml(event)
-        for room in self.rooms.values(): print(room)
 
 #   ---tools---
 
@@ -93,6 +88,7 @@ class World:
 
         return: id of room
         TODO: 
+            * prioritize active room, then nearby rooms, then the rest
             * alternative_names property ("Wien Mitte - The Mall" -> "mall"/"wien mitte")
             * search through multiple properties
             * option to return first match, or all the matches
@@ -106,6 +102,7 @@ class World:
         """
         TODO:
             * implement :p
+            * prioritize inventory, then active room, nearby rooms and then the rest
         """
         pass
 
@@ -121,7 +118,7 @@ class World:
         """
         matches = []
         for connection in self.connections.values():
-            links = connection.links
+            links = connection.links[:]
             if roomid in links:
                 links.remove(roomid)
                 matches.append(connection.id)
@@ -149,8 +146,6 @@ class World:
             container[objid] = obj
         else:
             raise Exception(f'Can\'t locate object {objid}')
-
-# --------- PLAYER ACTIONS ----------- #
 
     def move_to_room(self, roomid, byplayer=True):
         """
@@ -181,22 +176,21 @@ class World:
         self.player.inventory[objid] = x
         del self.rooms['0'].objects[objid]
 
-# ------------------------------------ #
-
     def step(self):
         self.properties['steps'] += 1
         return self.properties['steps']
 
-    def say(self, key, *obj): # TODO: implement property replacement
-        print(self.statusmessages[key])
+    def say(self, key, *obj): 
+        # TODO: remove, create renderer script
+        print('PLACEHOLDER')
 
-    def save(self, gamefile):
+    def save(self, gamefile=''):
         """
         gamefile: filepath
         converts itself into xml string and saves it in gamefile
         """
         self.properties['session'] += 1
-
+        if not gamefile: gamefile = self.gamefile
         worldtree = etree.Element('world')
         worldtree.append(conv.pack_properties(self.properties))
         worldtree.append(conv.pack_events(self.events, self.eventhandler))
@@ -207,10 +201,79 @@ class World:
             worldtree.append(con.save())
         conv.saveworld(worldtree, gamefile)
 
+    def pretty_tree(self, obj=None, name='', style='light', inventory=[], sub_style='light', indent=0, tablen=2):
+        styles = {
+            # syntax is name: [upperleft, upperright, lowerleft, lowerright, vertical, horizontal, ]
+            'light': [['┌', '┐', '└', '┘', '│', '─', '~ , ~'], [True]],
+            'double': [['╔', '╗', '╚', '╝', '║', '═', '»,«'], [True]],
+            'bold': [['█', '█', '█', '█', '█', '█', '▄,▄'], [True]],
+            'header': [['█', '█', '█', '█', '', '█', '▄ , ▄'], [True]],
+            'minecraft': [['◾️', '◾️', '◾️', '◾️', '◾️', '◾️', '◾️ ,'], [False]],
+            'diamond': [['🔷', '🔷', '🔷', '🔷', '', '🔷', '🔸,'], [False]],
+            'hearts': [['💗','💗','💗','💗','💗','💗', ', 💞'], [False]],
+            'classic': [['-','-','-','-','|','-', '> ,'], [True]],
+            'star': [['✨','✨','✨','✨','✨','✨', '⚡️ , ⚡️'], [False]]
+        }
+        if obj is None: 
+            obj = self
+            name = f"TextOn WORLD in {self.gamefile}"
+        elif not name:
+            classes = {Room: 'TextOn ROOM {id}', Connection: 'TextOn CONNECTION {id}', GameObject: 'TextOn GAMEOBJECT {id}', Player: 'TextOn PLAYER'}
+            try: name = classes[obj.__class__].replace('{id}', 'id:'+obj.id)
+            except KeyError: name = str(obj.__class__)
+            except: name = classes[obj.__class__]
+        styleconfig = styles[style][1]
+        style = styles[style][0]
+        if styleconfig[0]: 
+            bridge_top = style[0] + (len(name)+2)*style[5] + style[1]
+            bridge_bottom = style[2] + (len(name)+2)*style[5] + style[3]
+        else:
+            if not len(name)%2==0: name+=' '
+            bridge_top = style[0] + (round(len(name)*0.5)+1)*style[5] + style[1]
+            bridge_bottom = style[2] + (round(len(name)*0.5)+1)*style[5] + style[3]
+        #title
+        br = '\n' + indent * tablen * ' '
+        output = ''
+        output += f"{br}{bridge_top}"
+        output += f"{br}{style[4]} {name} {style[4]}"
+        output += f"{br}{bridge_bottom}"
+        #links if connection
+        if obj.__class__ == Connection:
+            output += f"{br}{style[6].replace(',', 'links')}{''.join(str(br + link) for link in obj.links)}"
+        #properties
+        try: output += f"{br}{style[6].replace(',', 'properties')}{''.join(f'{br}{prop}: {val}' for prop, val in obj.properties.items())}"
+        except: pass
+        #inventory
+        if inventory:
+            output += f"{br}{style[6].replace(',', 'inventory')}"
+            br = '\n' + (indent+1) * tablen * ' '
+            for thing in inventory:
+                output += f"{self.pretty_tree(obj=thing, style=sub_style, indent=indent+1, tablen=tablen)}"
+        #WIP: events
+        # try:
+        #     output += f"{br}{style[6].replace(',', 'events')}"
+        #     br = '\n' + (indent+1) * tablen * ' '
+        #     for event in obj.events:
+        #         output += f"{self.pretty_tree(obj=self.eventhandler.events[event], style=sub_style, indent=indent+1, tablen=tablen)}"
+        # except: pass
+        return output 
+
+    def display_tree(self, tablen=4):
+        indent = 0
+        output = self.pretty_tree(style='hearts', tablen=tablen)
+        indent += 1
+        for connection in self.connections.values():
+            output += self.pretty_tree(obj=connection, style='light', tablen=tablen, indent=indent)
+        output += self.pretty_tree(obj=self.player, style='star', inventory=self.player.inventory.values(), sub_style='double', tablen=tablen, indent=indent)
+        for room in self.rooms.values():
+            output += self.pretty_tree(obj=room, style='double', inventory=room.objects.values(), sub_style='double', tablen=tablen, indent=indent)
+
+        return output
+
     def __str__(self):
         props = {key: prop for key, prop in self.properties.items()}
         rooms = [room for room in self.rooms]
-        return f'WORLD: properties={str(props)}, rooms={str(rooms)}'
+        return f'WORLD [{self.gamefile}]: properties={str(props)}, rooms={str(rooms)}'
 
 class Connection:
 
@@ -284,4 +347,4 @@ class Room:
     def __str__(self):
         props = {key: prop for key, prop in self.properties.items()}
         objects = [obj for obj in self.objects]
-        return f'[ROOM {self.id}] properties={str(props)}, objects={str(objects)}, connects to={str(self.connectsto)}'
+        return f'[ROOM {self.id}] properties={str(props)}, objects={str(objects)}'
