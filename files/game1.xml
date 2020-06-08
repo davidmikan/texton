@@ -1,90 +1,90 @@
 <world>
+  <properties>
+    <session>3</session>
+    <steps>7</steps>
+  </properties>
+  <events>
+    <event id="e-0">
+      <if>
+        <compare>{w.steps};&gt;;3</compare>
+      </if>
+      <then>
+        <print>Test</print>
+      </then>
+    </event>
+  </events>
+  <player inroom="0">
     <properties>
-        <session>1</session>
-        <steps>0</steps>
+      <name>test</name>
     </properties>
-    <events>
-        <event id="e-0">
-            <if>
-                <compare>{w.steps};>;3</compare>
-            </if>
-            <then>
-                <print>Test</print>
-            </then>
-        </event>
-    </events>
-    <connection id="c-0">
-        <link>0</link>
-        <link>1</link>
+    <inventory>
+      <object id="002" type="test">
         <properties>
-            <locked>False</locked>
+          <name>Letter</name>
         </properties>
-    </connection>
-    <connection id="c-1">
-        <link>0</link>
-        <link>2</link>
-        <properties>
-        <locked>True</locked>
-        <key>001</key>
-        </properties>
-    </connection>
-    <player inroom='0'>
-            <properties>
-                <name>test</name>
-            </properties>
-            <inventory>
-            <object id='002' type='test'>
-                <properties>
-                    <name>Letter</name>
-                </properties>
-                <events></events>
-            </object>
-            </inventory>
-            <events></events>
-        </player>
-    <room id='0'>
-        <properties>
-            <name>Starter Room</name>
-            <description>The walls are green.</description>
-            <visited>False</visited>
-        </properties>
-        <events></events>
-        <object id='001' type='standard'>
-            <properties>
-                <name>irgendwas</name>
-                <drinkable>True</drinkable>
-            </properties>
-            <events></events>
-        </object>
-    </room>
-    <room id='1'>
-        <properties>
-            <visited>False</visited>
-            <name>Raum 2</name>
-            <description>The walls are green, but have a blue tint!</description>
-        </properties>
-        <events></events>
-    </room>
-    <room id='2' visited='False'>
-        <properties>
-            <name>Raum 3</name>
-            <description>This rooms walls are pink.</description>
-            <visited>False</visited>
-        </properties>
-        <events></events>
-        <object id='003' type='standard'>
-            <properties>
-                <name>0815</name>
-            </properties>
-            <events></events>
-        </object>
-    </room>
-    <room id='3'>
-        <properties>
-            <name>Raum 4</name>
-            <description></description>
-            <visited>False</visited>
-        </properties>
-        <events></events>
-    </room>
+        <events/>
+      </object>
+    </inventory>
+    <events/>
+  </player>
+  <room id="0">
+    <properties>
+      <name>Starter Room</name>
+      <description>The walls are green.</description>
+      <visited>False</visited>
+    </properties>
+    <events/>
+    <object id="001" type="standard">
+      <properties>
+        <name>irgendwas</name>
+        <drinkable>True</drinkable>
+      </properties>
+      <events/>
+    </object>
+  </room>
+  <room id="1">
+    <properties>
+      <visited>False</visited>
+      <name>Raum 2</name>
+      <description>The walls are green, but have a blue tint!</description>
+    </properties>
+    <events/>
+  </room>
+  <room id="2">
+    <properties>
+      <name>Raum 3</name>
+      <description>This rooms walls are pink.</description>
+      <visited>False</visited>
+    </properties>
+    <events/>
+    <object id="003" type="standard">
+      <properties>
+        <name>0815</name>
+      </properties>
+      <events/>
+    </object>
+  </room>
+  <room id="3">
+    <properties>
+      <name>Raum 4</name>
+      <description></description>
+      <visited>False</visited>
+    </properties>
+    <events/>
+  </room>
+  <connection id="c-0">
+    <properties>
+      <locked>False</locked>
+    </properties>
+    <link>0</link>
+    <link>1</link>
+  </connection>
+  <connection id="c-1">
+    <properties>
+      <locked>True</locked>
+      <key>001</key>
+    </properties>
+    <link>0</link>
+    <link>2</link>
+  </connection>
 </world>

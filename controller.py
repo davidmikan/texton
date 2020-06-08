@@ -1,5 +1,30 @@
 import world as wrld
 
+def process_uinput(uinput):
+    """
+    takes raw user input as argument and returns (command, arguments)
+
+    TODO:
+        * process input
+        * define return syntax
+    """
+    global commands
+    uinput = uinput.lower().strip()
+
+    # test for command
+    for command in commands:
+        if uinput.startswith(command): break
+        else: command = None
+    if not command:
+        return (None,None)
+
+    # process arguments
+    
+    arguments = uinput[len(command):].strip()
+    return (command, arguments)
+
+ # -- commands -- #
+
 def go_to_room(uinput):
     destination = world.move_to_room(world.get_room_id(uinput)) or world.move_to_room(uinput)
     if destination is not None:
@@ -53,9 +78,9 @@ if __name__ == '__main__':
 
     while True:
         print('\nSTEP: ' + str(world.get_property('steps')))
-        uinput = input('> ')
-        for command in commands:
-            if uinput.startswith(command):
-                world.step()
-                commands[command](uinput[len(command):].strip())
-                break
+        command, arguments = process_uinput(input('> '))
+        if not command:
+            world.say('command_not_found')
+            continue
+        world.step()
+        commands[command](arguments)

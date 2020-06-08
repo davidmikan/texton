@@ -72,6 +72,7 @@ class Player:
         inv = etree.SubElement(tree, 'inventory')
         for obj in self.inventory.values():
             inv.append(obj.save())
+        tree.append(conv.pack_events(self.events, self.world.eventhandler))
         return tree
 
     def __str__(self):

@@ -89,7 +89,7 @@ class World:
             * option to return first match, or all the matches
         """
         for room in self.rooms.values():
-            if value.lower == room.properties[prop].lower:
+            if value.lower() == room.properties[prop].lower():
                 return room.id
         return None
 
@@ -113,11 +113,11 @@ class World:
         """
         matches = []
         for connection in self.connections.values():
-            links = connection.links[:]
-            if roomid in links:
-                links.remove(roomid)
-                matches.append(connection.id)
-        return matches                              
+            if roomid in connection.links and (connection.properties.get('key') in self.player.inventory.keys() or not connection.properties['locked']):
+                for link in connection.links: 
+                    if link != roomid: matches.append(link)
+        matches = list(dict.fromkeys(matches)) # remove duplicates
+        return matches                             
 
     def move_object(self, objid, destination):
         """
@@ -154,7 +154,7 @@ class World:
             WIP
             * check if connection locked, if yes -> unlock_room
         """
-        if byplayer and roomid in self.get_nearby_rooms(roomid):
+        if byplayer and roomid in self.get_nearby_rooms(self.player.inroom):
             return self.__set_active_room(roomid)
         elif not byplayer and roomid in self.rooms:
             self.player.inroom = roomid
