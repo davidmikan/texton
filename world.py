@@ -70,15 +70,10 @@ class World:
         return self.properties[prop]
 
     def get_room(self, roomid):
-        return self.rooms.get(roomid)
+        return Room.instances.get(roomid)
 
     def get_object(self, objid):
-        if objid in self.player.inventory:
-            return self.player.inventory[objid]
-        for room in self.rooms.values():
-            if objid in room.objects:
-                return room.objects[objid]
-        return None
+        return GameObject.instances.get(objid)
 
     def get_room_id(self, value, prop='name') -> str:
         """
@@ -267,7 +262,6 @@ class World:
         output += self.pretty_tree(obj=self.player, style='star', inventory=self.player.inventory.values(), sub_style='double', tablen=tablen, indent=indent)
         for room in self.rooms.values():
             output += self.pretty_tree(obj=room, style='double', inventory=room.objects.values(), sub_style='double', tablen=tablen, indent=indent)
-
         return output
 
     def __str__(self):
@@ -276,18 +270,18 @@ class World:
         return f'WORLD [{self.gamefile}]: properties={str(props)}, rooms={str(rooms)}'
 
 class Connection:
-
     """
     represents a connection between 2 rooms
     self.links= [room-ids]
     """
-
+    instances = {}
     def __init__(self, tree):
         self.id = tree.get('id')
         self.properties = conv.unpack_properties(tree)
         self.links = []
         for link in tree.findall('link'): 
             self.links.append(link.text)
+        Connection.instances[self.id] = self
         return
     
     def get_property(self, prop):
@@ -314,7 +308,7 @@ class Room:
     self.objects = {object-id: GameObject}
     self.properties = {name: value}
     """
-    
+    instances = {}
     def __init__(self, world, tree):
         self.world = world
         self.id = tree.get('id')
@@ -326,6 +320,7 @@ class Room:
         for event in tree.find('events').findall('event'):
             self.events.append(event.get('id'))
             self.world.eventhandler.events[event.get('id')] = self.world.eventhandler.parser.parse_xml(event)
+        Room.instances[self.id] = self
         return
 
     def get_property(self, prop):

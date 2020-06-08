@@ -20,7 +20,7 @@ def unpack_properties(element) -> dict:
     for child in element.find('properties').getchildren():
         if not child.text:
             prop[child.tag] = ''
-        elif child.tag == 'name':
+        elif child.tag == 'name': # possibly unnecessary af
             prop['name'] = child.text
         elif child.tag in ('id', 'key'):
             prop[child.tag] = child.text

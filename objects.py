@@ -7,7 +7,7 @@ class GameObject:
     general object
     self.properties = {name: value}
     """
-    
+    instances = {}
     def __init__(self, tree, world):
         self.id = tree.get('id')
         self.type = tree.get('type')
@@ -17,6 +17,7 @@ class GameObject:
         for event in tree.find('events').findall('event'):
             self.events.append(event.get('id'))
             self.world.eventhandler.events[event.get('id')] = self.world.eventhandler.parser.parse_xml(event)
+        GameObject.instances[self.id] = self
         return
         
     def get_property(self, prop):

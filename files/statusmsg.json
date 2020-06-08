@@ -9,11 +9,13 @@
     "room_notfound": "There's no such room here.",
     "room_alreadyactive": "You're already here.",
     "room_locked": "The way is locked.",
-    "room_entered": "You're in {name} now.",
-    "object_taken": "{name} is in your inventory now.",
-    "object_dropped": "You dropped {name}.",
+    "room_entered": "You're in {activeroom_name} now.",
+    "object_taken": "{object_name} is in your inventory now.",
+    "object_dropped": "You dropped {object_name}.",
     "object_notfound": "There's nothing like that here.",
     "object_notininv": "There's no such thing in your inventory.",
     "inventory_empty": "You have nothing in your inventory.",
-    "inventory_list": "You have:"
+    "inventory_list": "You have:",
+    "": "",
+    "": ""
 }
